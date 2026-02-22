@@ -180,14 +180,7 @@
     <div class="connect-inner">
       <div class="gmail-icon">✉</div>
       <h2>Connect Your Gmail</h2>
-      <p>We scan your entire inbox — all read and unread emails — classify every one with AI, then let you bulk delete or permanently block senders.</p>
-      <div class="setup-note">
-        <strong>⚠ Setup Required:</strong> Enter your Google OAuth Client ID. <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent2)">Get one free at Google Cloud →</a>
-      </div>
-      <div class="input-group">
-        <label>Google OAuth Client ID</label>
-        <input type="text" id="client-id-input" placeholder="YOUR_CLIENT_ID.apps.googleusercontent.com"/>
-      </div>
+      <p>Sign in with Google to scan your entire inbox. AI classifies every email — read and unread — so you can bulk delete clutter and block senders instantly.</p>
       <button class="btn btn-google" onclick="connectGmail()">
         <svg class="google-logo" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
@@ -306,21 +299,16 @@ let pendingBlockEmail = null;
 let blockedOpen = true;
 
 const SCOPES = 'https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.settings.basic';
+const CLIENT_ID = '679696279477-toe1ut8lsfok496c6e1gpibf4cb4kjl9.apps.googleusercontent.com';
 
 function connectGmail() {
-  const clientId = document.getElementById('client-id-input').value.trim();
-  if (!clientId || !clientId.includes('.apps.googleusercontent.com')) {
-    showToast('Please enter a valid Google OAuth Client ID', 'error'); return;
-  }
   const params = new URLSearchParams({
-    client_id: clientId,
+    client_id: CLIENT_ID,
     redirect_uri: window.location.origin + window.location.pathname,
     response_type: 'token',
     scope: SCOPES,
-    include_granted_scopes: 'true',
-    state: clientId
+    include_granted_scopes: 'true'
   });
-  sessionStorage.setItem('iz_client_id', clientId);
   window.location = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
 }
 
@@ -330,8 +318,6 @@ function checkOAuthCallback() {
     const params = new URLSearchParams(hash.substring(1));
     accessToken = params.get('access_token');
     if (accessToken) sessionStorage.setItem('iz_token', accessToken);
-    const savedClientId = params.get('state');
-    if (savedClientId) sessionStorage.setItem('iz_client_id', savedClientId);
     window.history.replaceState({}, document.title, window.location.pathname);
     if (accessToken) fetchUserEmail();
   }
@@ -664,13 +650,6 @@ function formatDate(dateStr){
 }
 
 checkOAuthCallback();
-
-// Restore saved client ID into the input field
-const savedClientId = sessionStorage.getItem('iz_client_id');
-if (savedClientId) {
-  const input = document.getElementById('client-id-input');
-  if (input) input.value = savedClientId;
-}
 
 // If we already have a token, skip straight to scanning
 if (accessToken && !window.location.hash.includes('access_token')) {
