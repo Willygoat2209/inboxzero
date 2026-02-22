@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — InboxZero</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Willygoat2209/inboxzero/d703c9f3231b20833fcff4dfffed5c656abc9156/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #e8ff47;
+    --text: #f0f0f8;
+    --muted: #6b6b85;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 60% 40% at 80% 20%, rgba(232,255,71,0.04) 0%, transparent 60%);
+  }
+  .container { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 60px 24px; }
+  header { margin-bottom: 48px; }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; margin-bottom: 32px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .logo { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+  .logo span { color: var(--accent); }
+  .page-title { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 700; line-height: 1; margin-bottom: 16px; }
+  .meta { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+  .card { background: var(--card); border: 1px solid var(--border); padding: 40px; margin-bottom: 2px; position: relative; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.3; }
+  .card:first-of-type::before { opacity: 0.6; }
+  h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+  p { font-size: 12px; line-height: 2; color: var(--muted); margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+  p strong { color: var(--text); }
+  ul { list-style: none; padding: 0; margin-bottom: 14px; }
+  ul li { font-size: 12px; line-height: 2; color: var(--muted); padding-left: 16px; position: relative; }
+  ul li::before { content: '—'; position: absolute; left: 0; color: var(--accent); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .highlight { background: rgba(232,255,71,0.06); border: 1px solid rgba(232,255,71,0.15); padding: 16px 20px; margin-bottom: 14px; font-size: 12px; line-height: 2; color: var(--text); }
+  footer { text-align: center; padding: 40px 24px 32px; font-size: 11px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <a href="/" class="back">← Back to InboxZero</a>
+    <div class="logo">Inbox<span>Zero</span></div>
+    <h1 class="page-title">Terms of Service</h1>
+    <p class="meta">Last updated: January 1, 2026 &nbsp;·&nbsp; Effective: January 1, 2026</p>
+  </header>
+
+  <div class="card">
+    <h2>Agreement to Terms</h2>
+    <div class="highlight">
+      <strong>By using InboxZero you agree to these terms.</strong> If you do not agree, please do not use the application. These terms apply to all users of InboxZero at <a href="https://inbox-zero-mail.netlify.app">inbox-zero-mail.netlify.app</a>.
+    </div>
+    <p>These Terms of Service ("Terms") govern your use of InboxZero, a web application owned and operated by <strong>Will Bradshaw</strong>. Please read them carefully before using the service.</p>
+  </div>
+
+  <div class="card">
+    <h2>Description of Service</h2>
+    <p>InboxZero is a free, browser-based email management tool that connects to your Gmail account via Google OAuth, classifies your emails using automated detection, and allows you to delete emails and block senders in bulk.</p>
+    <p>The service is provided free of charge and operates entirely within your browser. No email data is stored on any server operated by InboxZero or Will Bradshaw.</p>
+  </div>
+
+  <div class="card">
+    <h2>Acceptable Use</h2>
+    <p>You agree to use InboxZero only for lawful purposes and in accordance with these Terms. You agree not to:</p>
+    <ul>
+      <li>Use the service to access any Gmail account that is not your own</li>
+      <li>Attempt to reverse engineer, copy, or redistribute the application without permission</li>
+      <li>Use the service in any way that violates Google's Terms of Service or Gmail policies</li>
+      <li>Use automated scripts or bots to interact with the service</li>
+      <li>Attempt to circumvent any security measures within the application</li>
+      <li>Use the service for any illegal or unauthorised purpose</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Your Data & Your Responsibility</h2>
+    <p>You retain full ownership of your email data at all times. InboxZero never takes ownership of, stores, or claims any rights over your emails or Gmail account data.</p>
+    <p><strong>Email deletion is permanent.</strong> When you instruct InboxZero to delete emails or block senders, those actions are carried out directly via the Gmail API and move emails to your Gmail Trash. You are solely responsible for reviewing emails before deleting them. Will Bradshaw accepts no liability for emails deleted through the use of this service.</p>
+    <p>It is your responsibility to ensure you are authorised to access and manage the Gmail account you connect to InboxZero.</p>
+  </div>
+
+  <div class="card">
+    <h2>Google's Terms Still Apply</h2>
+    <p>InboxZero accesses Gmail via Google's official API. Your use of InboxZero is also subject to:</p>
+    <ul>
+      <li><a href="https://policies.google.com/terms" target="_blank">Google Terms of Service</a></li>
+      <li><a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a></li>
+      <li><a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank">Google API Services User Data Policy</a></li>
+    </ul>
+    <p>By using InboxZero you confirm that you have read and agree to Google's terms in addition to these Terms of Service.</p>
+  </div>
+
+  <div class="card">
+    <h2>Intellectual Property</h2>
+    <p>InboxZero, including its design, code, logo, and all associated content, is the exclusive intellectual property of <strong>Will Bradshaw</strong>. All rights are reserved.</p>
+    <p>You may not copy, reproduce, distribute, modify, or create derivative works of InboxZero or any part of it without express written permission from Will Bradshaw.</p>
+  </div>
+
+  <div class="card">
+    <h2>Disclaimer of Warranties</h2>
+    <p>InboxZero is provided <strong>"as is"</strong> and <strong>"as available"</strong> without any warranties of any kind, either express or implied, including but not limited to:</p>
+    <ul>
+      <li>Warranties of merchantability or fitness for a particular purpose</li>
+      <li>Warranties that the service will be uninterrupted, error-free, or secure</li>
+      <li>Warranties regarding the accuracy or reliability of any results produced by the service</li>
+    </ul>
+    <p>Will Bradshaw makes no guarantee that InboxZero will correctly classify every email or that no important emails will be incorrectly flagged. Always review emails before deleting them.</p>
+  </div>
+
+  <div class="card">
+    <h2>Limitation of Liability</h2>
+    <p>To the fullest extent permitted by applicable law, Will Bradshaw shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of InboxZero, including but not limited to:</p>
+    <ul>
+      <li>Loss of emails or email data</li>
+      <li>Accidental deletion of important emails</li>
+      <li>Interruption or unavailability of the service</li>
+      <li>Any unauthorised access to your Gmail account</li>
+    </ul>
+    <p>Your sole remedy for dissatisfaction with the service is to stop using it.</p>
+  </div>
+
+  <div class="card">
+    <h2>Availability & Changes</h2>
+    <p>Will Bradshaw reserves the right to modify, suspend, or discontinue InboxZero at any time without notice. We also reserve the right to update these Terms at any time. The "Last updated" date at the top of this page will reflect any changes.</p>
+    <p>Continued use of InboxZero after changes to these Terms constitutes your acceptance of the updated Terms.</p>
+  </div>
+
+  <div class="card">
+    <h2>Governing Law</h2>
+    <p>These Terms shall be governed by and construed in accordance with the laws of the United States. Any disputes arising from these Terms or your use of InboxZero shall be subject to the exclusive jurisdiction of the courts of the United States.</p>
+  </div>
+
+  <div class="card">
+    <h2>Contact</h2>
+    <p>If you have any questions about these Terms of Service, please contact:</p>
+    <p><strong>Will Bradshaw</strong><br>
+    Owner & Developer, InboxZero<br>
+    <a href="https://inbox-zero-mail.netlify.app">inbox-zero-mail.netlify.app</a></p>
+  </div>
+</div>
+
+<footer>© 2026 Will Bradshaw — Licensed &amp; Published by Will Bradshaw. All Rights Reserved.
+  <span style="margin:0 12px;opacity:0.3;">|</span>
+  <a href="/privacy.html" style="color:var(--muted);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Privacy Policy</a>
+  <span style="margin:0 12px;opacity:0.3;">|</span>
+  <a href="/terms.html" style="color:var(--muted);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Terms of Service</a>
+</footer>
+</body>
+</html>
