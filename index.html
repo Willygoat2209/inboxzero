@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InboxZero — AI Email Cleaner</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Willygoat2209/inboxzero/d703c9f3231b20833fcff4dfffed5c656abc9156/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -352,7 +353,11 @@ async function startGmailScan() {
     if (pageToken) url += `&pageToken=${pageToken}`;
     const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
     const data = await resp.json();
-    if (data.messages) messageIds.push(...data.messages.map(m => m.id));
+    if (data.messages) {
+      for (const m of data.messages) {
+        if (!messageIds.includes(m.id)) messageIds.push(m.id);
+      }
+    }
     pageToken = data.nextPageToken;
   } while (pageToken && messageIds.length < 500);
 
@@ -385,7 +390,9 @@ async function startGmailScan() {
     else if (!isUnread)      { cat = 'read'; }
     else                     { cat = 'unread'; }
 
-    allEmails.push({ id: messageIds[i], sender: hdrs['From'] || 'Unknown', subject: hdrs['Subject'] || '(no subject)', date: formatDate(hdrs['Date']), category: cat });
+    if (!allEmails.find(e => e.id === messageIds[i])) {
+      allEmails.push({ id: messageIds[i], sender: hdrs['From'] || 'Unknown', subject: hdrs['Subject'] || '(no subject)', date: formatDate(hdrs['Date']), category: cat });
+    }
     updateStats(promoC, nlC, spamC, allEmails.length);
     if (i % 10 === 0) addLog(`[${cat}] ${(hdrs['Subject'] || '').substring(0,55)}`, cat === 'spam' || cat === 'promo' ? 'bad' : 'neutral');
   }
@@ -443,7 +450,7 @@ function startDemo() {
     if (analyzed >= total) {
       clearInterval(iv);
       document.getElementById('scan-status-text').textContent = 'Scan complete!';
-      allEmails = [...DEMO_EMAILS];
+      allEmails = [...new Map(DEMO_EMAILS.map(e => [e.id, e])).values()];
       updateStats(9, 7, 2, DEMO_EMAILS.length);
       addLog(`✓ Done. ${DEMO_EMAILS.length} emails categorized.`, 'good');
       setTimeout(showResults, 1000);
@@ -498,6 +505,10 @@ function showResults() {
 function renderEmailList() {
   const list = document.getElementById('email-list');
   list.innerHTML = '';
+  // Deduplicate by id before rendering
+  const seen = new Set();
+  allEmails = allEmails.filter(e => { if (seen.has(e.id)) return false; seen.add(e.id); return true; });
+
   filtered = currentFilter==='all' ? allEmails : allEmails.filter(e=>e.category===currentFilter);
   updateSelectedCount();
   if (!filtered.length) { list.innerHTML=`<div style="padding:40px;text-align:center;color:var(--muted);font-size:12px;">No emails in this category 🎉</div>`; return; }
