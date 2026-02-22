@@ -182,7 +182,7 @@
       <div class="gmail-icon">✉</div>
       <h2>Connect Your Gmail</h2>
       <p>Sign in with Google to scan your entire inbox. AI classifies every email — read and unread — so you can bulk delete clutter and block senders instantly.</p>
-      <button class="btn btn-google" onclick="connectGmail()">
+      <button class="btn btn-google" id="btn-google-signin">
         <svg class="google-logo" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
           <path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.615 24 12.255 24z"/>
@@ -192,7 +192,7 @@
         Continue with Google
       </button>
       <div class="divider">or try the demo</div>
-      <button class="btn" onclick="startDemo()" style="background:transparent;border:1px solid var(--accent);color:var(--accent);width:100%;justify-content:center;">▶ Launch Demo Mode</button>
+      <button class="btn" id="btn-demo" style="background:transparent;border:1px solid var(--accent);color:var(--accent);width:100%;justify-content:center;">▶ Launch Demo Mode</button>
       <div class="privacy-note">
         <span class="icon">🔒</span>
         <span>Emails are processed in your browser only. Nothing is stored or transmitted externally. OAuth tokens exist in memory only.</span>
@@ -677,3 +677,17 @@ function formatDate(dateStr){
     if(days===0) return 'Today';if(days===1) return 'Yesterday';
     if(days<30) return `${days}d ago`;if(days<365) return `${Math.floor(days/30)}mo ago`;
     return `${Math.floor(days/365)}y ago`;
+   }catch{return dateStr;}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('btn-google-signin').addEventListener('click', connectGmail);
+  document.getElementById('btn-demo').addEventListener('click', startDemo);
+  checkOAuthCallback();
+  if (accessToken && !window.location.hash.includes('access_token')) {
+    fetchUserEmail();
+  }
+});
+</script>
+</body>
+</html>
