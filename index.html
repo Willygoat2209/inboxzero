@@ -204,7 +204,7 @@
   <div class="panel card" id="panel-scan">
     <div class="scan-header">
       <h2>Scanning All Emails</h2>
-      <div class="account-badge"><div class="dot"></div><span id="connected-email">demo@gmail.com</span></div>
+      <div class="account-badge"><div class="dot"></div><span id="connected-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="543031393b143339353d387a373b39">[email&#160;protected]</a></span></div>
     </div>
     <div class="progress-section">
       <div style="font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;" id="scan-status-text">Connecting to Gmail…</div>
@@ -291,7 +291,13 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
+<footer style="text-align:center;padding:40px 24px 32px;font-size:11px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;position:relative;z-index:1;">
+  © 2026 Will Bradshaw — Licensed &amp; Published by Will Bradshaw. All Rights Reserved.
+  <span style="margin:0 12px;opacity:0.3;">|</span>
+  <a href="/privacy.html" style="color:var(--muted);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Privacy Policy</a>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 let accessToken = sessionStorage.getItem('iz_token') || null;
 let demoMode = false;
 let allEmails = [];
@@ -669,15 +675,3 @@ function formatDate(dateStr){
     if(days===0) return 'Today';if(days===1) return 'Yesterday';
     if(days<30) return `${days}d ago`;if(days<365) return `${Math.floor(days/30)}mo ago`;
     return `${Math.floor(days/365)}y ago`;
-  }catch{return dateStr;}
-}
-
-checkOAuthCallback();
-
-// If we already have a token, skip straight to scanning
-if (accessToken && !window.location.hash.includes('access_token')) {
-  fetchUserEmail();
-}
-</script>
-</body>
-</html>
