@@ -228,7 +228,10 @@
         <h2>Review & Clean</h2>
         <p style="font-size:12px;color:var(--muted);margin-top:4px;" id="results-summary">Loading…</p>
       </div>
-      <button class="btn btn-ghost" onclick="rescan()">↺ Rescan</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" onclick="rescan()">↺ Rescan</button>
+        <button class="btn btn-ghost" onclick="signOut()" style="color:var(--danger);border-color:var(--danger);">⏻ Sign Out</button>
+      </div>
     </div>
 
     <div class="filter-tabs">
@@ -621,6 +624,15 @@ async function confirmDelete(){
   updateTabCounts();renderEmailList();
   document.getElementById('results-summary').textContent=`${allEmails.length} emails remaining`;
   showToast(`✓ ${done} emails moved to trash`,'success');
+}
+
+function signOut() {
+  sessionStorage.removeItem('iz_token');
+  accessToken = null;
+  demoMode = false;
+  allEmails = []; selectedIds.clear(); blockedSenders.clear();
+  document.getElementById('blocked-section').style.display = 'none';
+  showPanel('connect');
 }
 
 function rescan(){
