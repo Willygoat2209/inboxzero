@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — InboxZero</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Willygoat2209/inboxzero/d703c9f3231b20833fcff4dfffed5c656abc9156/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #e8ff47;
+    --text: #f0f0f8;
+    --muted: #6b6b85;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 60% 40% at 80% 20%, rgba(232,255,71,0.04) 0%, transparent 60%);
+  }
+  .container { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 60px 24px; }
+  header { margin-bottom: 48px; }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; margin-bottom: 32px; transition: color 0.2s; }
+  .back:hover { color: var(--accent); }
+  .logo { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+  .logo span { color: var(--accent); }
+  .page-title { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 700; line-height: 1; margin-bottom: 16px; }
+  .meta { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+  .card { background: var(--card); border: 1px solid var(--border); padding: 40px; margin-bottom: 2px; position: relative; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.3; }
+  .card:first-of-type::before { opacity: 0.6; }
+  h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+  p { font-size: 12px; line-height: 2; color: var(--muted); margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+  p strong { color: var(--text); }
+  ul { list-style: none; padding: 0; margin-bottom: 14px; }
+  ul li { font-size: 12px; line-height: 2; color: var(--muted); padding-left: 16px; position: relative; }
+  ul li::before { content: '—'; position: absolute; left: 0; color: var(--accent); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .highlight { background: rgba(232,255,71,0.06); border: 1px solid rgba(232,255,71,0.15); padding: 16px 20px; margin-bottom: 14px; font-size: 12px; line-height: 2; color: var(--text); }
+  footer { text-align: center; padding: 40px 24px 32px; font-size: 11px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <a href="/" class="back">← Back to InboxZero</a>
+    <div class="logo">Inbox<span>Zero</span></div>
+    <h1 class="page-title">Privacy Policy</h1>
+    <p class="meta">Last updated: January 1, 2026 &nbsp;·&nbsp; Effective: January 1, 2026</p>
+  </header>
+
+  <div class="card">
+    <h2>Overview</h2>
+    <div class="highlight">
+      <strong>The short version:</strong> InboxZero never stores, transmits, or shares your email data. Everything happens in your browser. We have no servers, no database, and no access to your emails.
+    </div>
+    <p>This Privacy Policy describes how InboxZero ("we", "us", or "our"), owned and operated by Will Bradshaw, handles information when you use our web application at <a href="https://inbox-zero-mail.netlify.app">inbox-zero-mail.netlify.app</a>.</p>
+    <p>By using InboxZero you agree to the practices described in this policy. If you do not agree, please do not use the application.</p>
+  </div>
+
+  <div class="card">
+    <h2>Information We Do NOT Collect</h2>
+    <p>InboxZero is a fully client-side application. We do not operate any backend servers or databases. As a result, we <strong>never</strong> collect, store, or transmit:</p>
+    <ul>
+      <li>Your email content, subject lines, or attachments</li>
+      <li>Your Gmail contacts or address book</li>
+      <li>Your Google account credentials or passwords</li>
+      <li>Your name, email address, or any personal identifiers</li>
+      <li>Your IP address or device information</li>
+      <li>Any usage analytics or behavioural data</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>How We Access Your Gmail</h2>
+    <p>InboxZero uses <strong>Google OAuth 2.0</strong> to request temporary, permission-based access to your Gmail account. When you click "Sign in with Google", Google issues a short-lived access token directly to your browser.</p>
+    <p>This token is used solely to:</p>
+    <ul>
+      <li>Read email metadata (sender, subject, date, labels) via the Gmail API</li>
+      <li>Move selected emails to Gmail Trash on your instruction</li>
+      <li>Create Gmail filters to block senders on your instruction</li>
+    </ul>
+    <p>The token is stored only in your browser's <strong>sessionStorage</strong> and is never sent to any third-party server. It expires automatically and is cleared when you sign out or close your browser tab.</p>
+  </div>
+
+  <div class="card">
+    <h2>Google API Services</h2>
+    <p>InboxZero's use of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+    <p>Specifically:</p>
+    <ul>
+      <li>We only request the minimum Gmail permissions necessary to provide the service</li>
+      <li>We do not use Gmail data for advertising purposes</li>
+      <li>We do not sell or transfer Gmail data to third parties</li>
+      <li>We do not allow humans to read your Gmail data</li>
+      <li>Gmail data is used only to provide and improve the InboxZero service within your browser session</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Data Storage & Security</h2>
+    <p>All email processing occurs entirely within your browser. No email data ever leaves your device or is transmitted to InboxZero or any external server operated by us.</p>
+    <p>Your OAuth access token is stored in <strong>sessionStorage</strong>, which is:</p>
+    <ul>
+      <li>Scoped to your current browser tab only</li>
+      <li>Automatically cleared when you close the tab</li>
+      <li>Never accessible to other websites or tabs</li>
+      <li>Immediately cleared when you click "Sign Out"</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Third-Party Services</h2>
+    <p>InboxZero uses the following third-party services solely to deliver the application interface:</p>
+    <ul>
+      <li><strong>Google Fonts</strong> — to load the application typefaces (DM Mono, Playfair Display)</li>
+      <li><strong>Google OAuth & Gmail API</strong> — to authenticate and interact with your Gmail account</li>
+      <li><strong>Netlify</strong> — to host and serve the static HTML application file</li>
+    </ul>
+    <p>These services have their own privacy policies. We encourage you to review <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a> and <a href="https://www.netlify.com/privacy/" target="_blank">Netlify's Privacy Policy</a>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Children's Privacy</h2>
+    <p>InboxZero is not directed at children under the age of 13. We do not knowingly collect any information from children. If you believe a child has used this application, please contact us and we will take appropriate steps.</p>
+  </div>
+
+  <div class="card">
+    <h2>Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. Any changes will be reflected by updating the "Last updated" date at the top of this page. We encourage you to review this policy periodically. Continued use of InboxZero after changes are posted constitutes your acceptance of the updated policy.</p>
+  </div>
+
+  <div class="card">
+    <h2>Contact</h2>
+    <p>If you have any questions, concerns, or requests regarding this Privacy Policy or InboxZero's data practices, please contact:</p>
+    <p><strong>Will Bradshaw</strong><br>
+    Owner & Developer, InboxZero<br>
+    <a href="https://inbox-zero-mail.netlify.app">inbox-zero-mail.netlify.app</a></p>
+  </div>
+</div>
+
+<footer>© 2026 Will Bradshaw — Licensed &amp; Published by Will Bradshaw. All Rights Reserved.</footer>
+</body>
+</html>
