@@ -18,780 +18,176 @@
     --danger: #ff4757;
     --safe: #2ed573;
     --warn: #ffa502;
+    --block: #ff6b9d;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Animated background */
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; overflow-x: hidden; }
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(232,255,71,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 20% 80%, rgba(71,255,232,0.05) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 60% 40% at 80% 20%, rgba(232,255,71,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 20% 80%, rgba(71,255,232,0.05) 0%, transparent 60%);
   }
-
-  /* Noise texture */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 24px;
-  }
-
-  /* Header */
-  header {
-    text-align: center;
-    margin-bottom: 60px;
-    animation: fadeUp 0.8s ease both;
-  }
-
-  .logo-badge {
-    display: inline-block;
-    font-size: 11px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    padding: 4px 12px;
-    margin-bottom: 20px;
-    animation: pulse 3s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(232,255,71,0.3); }
-    50% { box-shadow: 0 0 0 6px rgba(232,255,71,0); }
-  }
-
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(48px, 8vw, 88px);
-    font-weight: 900;
-    line-height: 0.9;
-    letter-spacing: -2px;
-    margin-bottom: 16px;
-  }
-
+  .container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+  header { text-align: center; margin-bottom: 60px; animation: fadeUp 0.8s ease both; }
+  .logo-badge { display: inline-block; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; margin-bottom: 20px; animation: pulse 3s infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,255,71,0.3)}50%{box-shadow:0 0 0 6px rgba(232,255,71,0)} }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(48px,8vw,88px); font-weight: 900; line-height: 0.9; letter-spacing: -2px; margin-bottom: 16px; }
   h1 span { color: var(--accent); }
-
-  .subtitle {
-    color: var(--muted);
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    max-width: 400px;
-    margin: 0 auto;
-    line-height: 1.8;
-  }
-
-  /* Steps indicator */
-  .steps {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    margin-bottom: 48px;
-    animation: fadeUp 0.8s 0.2s ease both;
-  }
-
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 0 16px;
-    position: relative;
-    transition: color 0.3s;
-  }
-
-  .step:not(:last-child)::after {
-    content: '——';
-    position: absolute;
-    right: -16px;
-    letter-spacing: -3px;
-    color: var(--border);
-  }
-
+  .subtitle { color: var(--muted); font-size: 13px; letter-spacing: 0.05em; max-width: 420px; margin: 0 auto; line-height: 1.8; }
+  .steps { display: flex; justify-content: center; margin-bottom: 48px; }
+  .step { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0 16px; position: relative; transition: color 0.3s; }
+  .step:not(:last-child)::after { content: '——'; position: absolute; right: -16px; letter-spacing: -3px; color: var(--border); }
   .step.active { color: var(--accent); }
-  .step.done { color: var(--muted); }
-
-  .step-num {
-    width: 20px;
-    height: 20px;
-    border: 1px solid currentColor;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-  }
-
-  .step.active .step-num {
-    background: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
-  }
-
-  /* Panels */
-  .panel {
-    display: none;
-    animation: fadeUp 0.5s ease both;
-  }
+  .step-num { width: 20px; height: 20px; border: 1px solid currentColor; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+  .step.active .step-num { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .panel { display: none; animation: fadeUp 0.5s ease both; }
   .panel.active { display: block; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Card */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    padding: 40px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity: 0.5;
-  }
-
-  /* Connect panel */
-  .connect-inner {
-    text-align: center;
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  .gmail-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 24px;
-    background: linear-gradient(135deg, #EA4335 0%, #FBBC05 50%, #34A853 100%);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    box-shadow: 0 8px 32px rgba(234,67,53,0.3);
-  }
-
-  .connect-inner h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-
-  .connect-inner p {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.8;
-    margin-bottom: 32px;
-  }
-
-  /* Email input */
-  .input-group {
-    position: relative;
-    margin-bottom: 16px;
-  }
-
-  .input-group label {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-    text-align: left;
-  }
-
-  .input-group input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 14px 16px;
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .input-group input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(232,255,71,0.1);
-  }
-
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .card { background: var(--card); border: 1px solid var(--border); padding: 40px; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5; }
+  .connect-inner { text-align: center; max-width: 480px; margin: 0 auto; }
+  .gmail-icon { width: 64px; height: 64px; margin: 0 auto 24px; background: linear-gradient(135deg,#EA4335 0%,#FBBC05 50%,#34A853 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 32px rgba(234,67,53,0.3); }
+  .connect-inner h2 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+  .connect-inner p { color: var(--muted); font-size: 12px; line-height: 1.8; margin-bottom: 32px; }
+  .input-group { margin-bottom: 16px; }
+  .input-group label { display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; text-align: left; }
+  .input-group input { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 14px 16px; font-family: 'DM Mono', monospace; font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,255,71,0.1); }
   .input-group input::placeholder { color: var(--muted); }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 28px;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: var(--bg);
-    width: 100%;
-    justify-content: center;
-    font-weight: 500;
-  }
-
-  .btn-primary:hover {
-    background: #f5ff6e;
-    box-shadow: 0 0 24px rgba(232,255,71,0.4);
-    transform: translateY(-1px);
-  }
-
-  .btn-primary:active { transform: translateY(0); }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    font-size: 11px;
-  }
-
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); font-size: 11px; }
   .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
-
-  .btn-danger {
-    background: var(--danger);
-    color: white;
-    padding: 10px 20px;
-    font-size: 11px;
-  }
-
-  .btn-danger:hover {
-    background: #ff6b78;
-    box-shadow: 0 0 16px rgba(255,71,87,0.4);
-  }
-
-  .btn-safe {
-    background: transparent;
-    color: var(--safe);
-    border: 1px solid var(--safe);
-    padding: 10px 20px;
-    font-size: 11px;
-  }
-
+  .btn-danger { background: var(--danger); color: white; padding: 10px 20px; font-size: 11px; }
+  .btn-danger:hover { background: #ff6b78; box-shadow: 0 0 16px rgba(255,71,87,0.4); }
+  .btn-safe { background: transparent; color: var(--safe); border: 1px solid var(--safe); padding: 10px 20px; font-size: 11px; }
   .btn-safe:hover { background: rgba(46,213,115,0.1); }
-
-  /* Google OAuth button */
-  .btn-google {
-    background: white;
-    color: #333;
-    width: 100%;
-    justify-content: center;
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    padding: 16px;
-    border: none;
-  }
-
-  .btn-google:hover {
-    background: #f5f5f5;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    transform: translateY(-1px);
-  }
-
-  .google-logo {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Privacy note */
-  .privacy-note {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    background: rgba(232,255,71,0.05);
-    border: 1px solid rgba(232,255,71,0.15);
-    padding: 12px 16px;
-    margin-top: 16px;
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.6;
-    text-align: left;
-  }
-
-  .privacy-note .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-
-  /* Scanning panel */
-  .scan-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-  }
-
-  .scan-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-  }
-
-  .account-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 8px 14px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .account-badge .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--safe);
-    animation: blink 1.5s infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  /* Progress */
-  .progress-section {
-    margin-bottom: 32px;
-  }
-
-  .progress-bar-wrap {
-    background: var(--surface);
-    height: 4px;
-    margin: 16px 0 8px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background: var(--accent);
-    width: 0%;
-    transition: width 0.3s ease;
-    position: relative;
-  }
-
-  .progress-bar::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 60px;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
-    animation: shimmer 1s infinite;
-  }
-
-  @keyframes shimmer {
-    from { transform: translateX(-60px); }
-    to { transform: translateX(60px); }
-  }
-
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  /* Stats row */
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    margin-bottom: 32px;
-  }
-
-  .stat {
-    background: var(--card);
-    padding: 20px;
-    text-align: center;
-  }
-
-  .stat-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 4px;
-    transition: all 0.3s;
-  }
-
-  .stat-label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* Live log */
-  .live-log {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 16px;
-    height: 140px;
-    overflow-y: auto;
-    font-size: 11px;
-    line-height: 2;
-  }
-
+  .btn-google { background: white; color: #333; width: 100%; justify-content: center; font-family: 'DM Mono', monospace; font-size: 13px; padding: 16px; border: none; }
+  .btn-google:hover { background: #f5f5f5; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transform: translateY(-1px); }
+  .google-logo { width: 20px; height: 20px; }
+  .privacy-note { display: flex; align-items: flex-start; gap: 10px; background: rgba(232,255,71,0.05); border: 1px solid rgba(232,255,71,0.15); padding: 12px 16px; margin-top: 16px; font-size: 11px; color: var(--muted); line-height: 1.6; text-align: left; }
+  .privacy-note .icon { font-size: 16px; flex-shrink: 0; }
+  .setup-note { background: rgba(71,255,232,0.05); border: 1px solid rgba(71,255,232,0.2); padding: 16px; font-size: 11px; color: var(--accent2); line-height: 1.8; margin-bottom: 20px; }
+  .divider { display: flex; align-items: center; gap: 16px; margin: 20px 0; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  /* Scan */
+  .scan-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 12px; }
+  .scan-header h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; }
+  .account-badge { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); padding: 8px 14px; font-size: 11px; color: var(--muted); }
+  .account-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--safe); animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+  .progress-section { margin-bottom: 32px; }
+  .progress-bar-wrap { background: var(--surface); height: 4px; margin: 16px 0 8px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease; }
+  .progress-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); margin-bottom: 32px; }
+  .stat { background: var(--card); padding: 20px; text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; }
+  .stat-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .live-log { background: var(--surface); border: 1px solid var(--border); padding: 16px; height: 140px; overflow-y: auto; font-size: 11px; line-height: 2; }
   .log-line { display: flex; gap: 12px; }
   .log-time { color: var(--muted); flex-shrink: 0; }
   .log-msg { color: var(--text); }
   .log-msg.good { color: var(--safe); }
   .log-msg.bad { color: var(--danger); }
   .log-msg.neutral { color: var(--accent2); }
-
-  /* Results panel */
-  .results-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    flex-wrap: gap;
-  }
-
-  .results-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-  }
-
-  .filter-tabs {
-    display: flex;
-    gap: 0;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-
-  .filter-tab {
-    padding: 10px 18px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    background: transparent;
-    color: var(--muted);
-    border: none;
-    border-right: 1px solid var(--border);
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
+  /* Results */
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 12px; }
+  .results-header h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; }
+  .filter-tabs { display: flex; border: 1px solid var(--border); overflow-x: auto; margin-bottom: 20px; }
+  .filter-tab { padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; background: transparent; color: var(--muted); border: none; border-right: 1px solid var(--border); transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
   .filter-tab:last-child { border-right: none; }
   .filter-tab.active { background: var(--accent); color: var(--bg); }
   .filter-tab:not(.active):hover { background: var(--surface); color: var(--text); }
-
-  .filter-tab .count {
-    background: rgba(0,0,0,0.2);
-    padding: 1px 6px;
-    border-radius: 10px;
-    font-size: 10px;
-  }
-
-  .filter-tab.active .count { background: rgba(0,0,0,0.3); }
-
-  /* Email list */
+  .filter-tab .count { background: rgba(0,0,0,0.2); padding: 1px 6px; border-radius: 10px; font-size: 10px; }
+  .bulk-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+  .bulk-bar .info { font-size: 12px; color: var(--muted); }
+  .bulk-bar .info span { color: var(--accent); }
+  .bulk-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .email-list { display: flex; flex-direction: column; gap: 2px; }
-
-  .email-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 16px 20px;
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    align-items: center;
-    gap: 16px;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .email-item:hover { border-color: var(--muted); }
-
-  .email-item.selected {
-    background: rgba(232,255,71,0.05);
-    border-color: rgba(232,255,71,0.3);
-  }
-
-  .email-item.deleted {
-    opacity: 0.3;
-    pointer-events: none;
-  }
-
-  .email-check {
-    width: 16px;
-    height: 16px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
-  }
-
+  .email-item { background: var(--surface); border: 1px solid var(--border); padding: 12px 14px; display: grid; grid-template-columns: 20px 1fr auto auto auto; align-items: center; gap: 12px; transition: all 0.2s; }
+  .email-item:hover { border-color: var(--muted); background: #13131c; }
+  .email-item.selected { background: rgba(232,255,71,0.05); border-color: rgba(232,255,71,0.3); }
+  .email-check { width: 16px; height: 16px; border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
   .email-check:hover { border-color: var(--accent); }
   .email-check.checked { background: var(--accent); border-color: var(--accent); }
   .email-check.checked::after { content: '✓'; font-size: 10px; color: var(--bg); }
-
   .email-info { min-width: 0; }
-
-  .email-sender {
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--text);
-  }
-
-  .email-subject {
-    font-size: 11px;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .email-tag {
-    padding: 3px 10px;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border-radius: 2px;
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
+  .email-sender { font-size: 12px; font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .email-subject { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .email-tag { padding: 3px 8px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; white-space: nowrap; }
   .tag-promo { background: rgba(255,71,87,0.15); color: var(--danger); }
   .tag-newsletter { background: rgba(255,165,2,0.15); color: var(--warn); }
+  .tag-read { background: rgba(107,107,133,0.2); color: var(--muted); }
   .tag-unread { background: rgba(71,255,232,0.1); color: var(--accent2); }
   .tag-spam { background: rgba(255,71,87,0.25); color: var(--danger); }
   .tag-social { background: rgba(46,213,115,0.1); color: var(--safe); }
-
-  .email-meta {
-    font-size: 10px;
-    color: var(--muted);
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  /* Bulk actions bar */
-  .bulk-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .bulk-bar .info { font-size: 12px; color: var(--muted); }
-  .bulk-bar .info span { color: var(--accent); }
-
-  .bulk-actions { display: flex; gap: 8px; }
-
-  /* Confirm modal */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 100;
-    backdrop-filter: blur(4px);
-    align-items: center;
-    justify-content: center;
-  }
-
+  .email-meta { font-size: 10px; color: var(--muted); text-align: right; flex-shrink: 0; white-space: nowrap; }
+  /* Block button */
+  .btn-block { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,107,157,0.3); background: rgba(255,107,157,0.08); color: var(--block); transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
+  .btn-block:hover { background: rgba(255,107,157,0.2); border-color: var(--block); box-shadow: 0 0 10px rgba(255,107,157,0.2); }
+  .btn-block.is-blocked { opacity: 0.5; cursor: default; pointer-events: none; }
+  /* Blocked section */
+  .blocked-section { margin-top: 24px; border: 1px solid rgba(255,107,157,0.2); background: rgba(255,107,157,0.03); }
+  .blocked-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid rgba(255,107,157,0.15); cursor: pointer; }
+  .blocked-header h3 { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--block); }
+  .blocked-list { padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .blocked-chip { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,107,157,0.1); border: 1px solid rgba(255,107,157,0.25); padding: 5px 12px; font-size: 11px; color: var(--block); }
+  .blocked-chip .remove { cursor: pointer; opacity: 0.6; font-size: 14px; line-height: 1; transition: opacity 0.2s; }
+  .blocked-chip .remove:hover { opacity: 1; }
+  /* Modals */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; backdrop-filter: blur(4px); align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--card);
-    border: 1px solid var(--border);
-    padding: 40px;
-    max-width: 400px;
-    width: 90%;
-    animation: fadeUp 0.3s ease;
-    position: relative;
-  }
-
-  .modal::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--danger);
-  }
-
-  .modal h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    margin-bottom: 12px;
-  }
-
-  .modal p {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.8;
-    margin-bottom: 24px;
-  }
-
+  .modal { background: var(--card); border: 1px solid var(--border); padding: 40px; max-width: 420px; width: 90%; animation: fadeUp 0.3s ease; position: relative; }
+  .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--danger); }
+  .modal.block-modal::before { background: var(--block); }
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 12px; }
+  .modal p { color: var(--muted); font-size: 12px; line-height: 1.8; margin-bottom: 24px; }
   .modal-actions { display: flex; gap: 12px; }
-
+  .btn-block-confirm { background: var(--block); color: white; flex: 1; display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-block-confirm:hover { background: #ff85b3; }
   /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--card);
-    border: 1px solid var(--border);
-    padding: 12px 24px;
-    font-size: 12px;
-    z-index: 200;
-    transition: transform 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
+  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card); border: 1px solid var(--border); padding: 12px 24px; font-size: 12px; z-index: 200; transition: transform 0.3s ease; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { border-top: 2px solid var(--safe); }
   .toast.error { border-top: 2px solid var(--danger); }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 4px; }
+  .toast.block-toast { border-top: 2px solid var(--block); }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: var(--surface); }
   ::-webkit-scrollbar-thumb { background: var(--border); }
-
-  /* Divider */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 20px 0;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* Important note */
-  .setup-note {
-    background: rgba(71,255,232,0.05);
-    border: 1px solid rgba(71,255,232,0.2);
-    padding: 16px;
-    font-size: 11px;
-    color: var(--accent2);
-    line-height: 1.8;
-    margin-bottom: 20px;
-  }
-
-  .setup-note strong { color: var(--accent2); }
-
-  @media (max-width: 600px) {
-    .stats-row { grid-template-columns: repeat(3, 1fr); }
-    .stat-num { font-size: 24px; }
-    .email-item { grid-template-columns: auto 1fr; }
-    .email-tag, .email-meta { display: none; }
-    .scan-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  @media(max-width:640px){
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .email-item{grid-template-columns:20px 1fr auto}
+    .email-tag,.email-meta{display:none}
   }
 </style>
 </head>
 <body>
-
 <div class="container">
   <header>
     <div class="logo-badge">AI-Powered</div>
     <h1>Inbox<span>Zero</span></h1>
-    <p class="subtitle">Connect your Gmail. Let AI identify the clutter. Delete in bulk. Breathe again.</p>
+    <p class="subtitle">Connect your Gmail. AI scans every email — read and unread. Delete clutter and block senders with one click.</p>
   </header>
 
-  <!-- Steps -->
   <div class="steps">
     <div class="step active" id="step1"><div class="step-num">1</div>Connect</div>
     <div class="step" id="step2"><div class="step-num">2</div>Scan</div>
     <div class="step" id="step3"><div class="step-num">3</div>Review</div>
   </div>
 
-  <!-- Panel 1: Connect -->
+  <!-- Connect -->
   <div class="panel active card" id="panel-connect">
     <div class="connect-inner">
       <div class="gmail-icon">✉</div>
       <h2>Connect Your Gmail</h2>
-      <p>We'll scan your inbox using Gmail's API, classify emails with AI, and let you delete clutter in bulk — all without ever storing your data.</p>
-
+      <p>We scan your entire inbox — all read and unread emails — classify every one with AI, then let you bulk delete or permanently block senders.</p>
       <div class="setup-note">
-        <strong>⚠ Setup Required:</strong> This app uses Gmail OAuth. You need a Google Cloud project with Gmail API enabled and your <code>CLIENT_ID</code> entered below. <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent2)">Get one free at console.cloud.google.com →</a>
+        <strong>⚠ Setup Required:</strong> Enter your Google OAuth Client ID. <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent2)">Get one free at Google Cloud →</a>
       </div>
-
       <div class="input-group">
         <label>Google OAuth Client ID</label>
-        <input type="text" id="client-id-input" placeholder="YOUR_CLIENT_ID.apps.googleusercontent.com" />
+        <input type="text" id="client-id-input" placeholder="YOUR_CLIENT_ID.apps.googleusercontent.com"/>
       </div>
-
       <button class="btn btn-google" onclick="connectGmail()">
         <svg class="google-logo" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
@@ -801,67 +197,43 @@
         </svg>
         Continue with Google
       </button>
-
       <div class="divider">or try the demo</div>
-
-      <button class="btn btn-primary" onclick="startDemo()" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">
-        ▶ Launch Demo Mode (Sample Data)
-      </button>
-
+      <button class="btn" onclick="startDemo()" style="background:transparent;border:1px solid var(--accent);color:var(--accent);width:100%;justify-content:center;">▶ Launch Demo Mode</button>
       <div class="privacy-note">
         <span class="icon">🔒</span>
-        <span>Your emails are processed locally in this browser session. We never store, sell, or transmit your email content to any server. OAuth tokens are held in memory only.</span>
+        <span>Emails are processed in your browser only. Nothing is stored or transmitted externally. OAuth tokens exist in memory only.</span>
       </div>
     </div>
   </div>
 
-  <!-- Panel 2: Scanning -->
+  <!-- Scan -->
   <div class="panel card" id="panel-scan">
     <div class="scan-header">
-      <h2>Scanning Inbox</h2>
-      <div class="account-badge">
-        <div class="dot"></div>
-        <span id="connected-email">demo@gmail.com</span>
-      </div>
+      <h2>Scanning All Emails</h2>
+      <div class="account-badge"><div class="dot"></div><span id="connected-email">demo@gmail.com</span></div>
     </div>
-
     <div class="progress-section">
-      <div style="font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;" id="scan-status-text">Fetching message list…</div>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar" id="progress-bar"></div>
-      </div>
-      <div class="progress-meta">
-        <span id="scan-count">0 / 0 emails analyzed</span>
-        <span id="scan-pct">0%</span>
-      </div>
+      <div style="font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;" id="scan-status-text">Connecting to Gmail…</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+      <div class="progress-meta"><span id="scan-count">0 / 0 emails analyzed</span><span id="scan-pct">0%</span></div>
     </div>
-
     <div class="stats-row">
-      <div class="stat">
-        <span class="stat-num" id="stat-promo">0</span>
-        <span class="stat-label">Promotional</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num" id="stat-newsletter">0</span>
-        <span class="stat-label">Newsletters</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num" id="stat-unread">0</span>
-        <span class="stat-label">Old Unread</span>
-      </div>
+      <div class="stat"><span class="stat-num" id="stat-promo">0</span><span class="stat-label">Promotional</span></div>
+      <div class="stat"><span class="stat-num" id="stat-newsletter">0</span><span class="stat-label">Newsletters</span></div>
+      <div class="stat"><span class="stat-num" id="stat-spam">0</span><span class="stat-label">Spam</span></div>
+      <div class="stat"><span class="stat-num" id="stat-total">0</span><span class="stat-label">Total Scanned</span></div>
     </div>
-
     <div class="live-log" id="live-log">
-      <div class="log-line"><span class="log-time">00:00</span><span class="log-msg neutral">— Initializing AI classification engine…</span></div>
+      <div class="log-line"><span class="log-time">00:00</span><span class="log-msg neutral">— Initializing AI engine…</span></div>
     </div>
   </div>
 
-  <!-- Panel 3: Review & Delete -->
+  <!-- Results -->
   <div class="panel card" id="panel-results">
     <div class="results-header">
       <div>
         <h2>Review & Clean</h2>
-        <p style="font-size:12px;color:var(--muted);margin-top:4px;" id="results-summary">AI found X emails to clean up</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px;" id="results-summary">Loading…</p>
       </div>
       <button class="btn btn-ghost" onclick="rescan()">↺ Rescan</button>
     </div>
@@ -870,8 +242,9 @@
       <button class="filter-tab active" onclick="setFilter('all')" id="tab-all">All <span class="count" id="count-all">0</span></button>
       <button class="filter-tab" onclick="setFilter('promo')" id="tab-promo">Promotions <span class="count" id="count-promo">0</span></button>
       <button class="filter-tab" onclick="setFilter('newsletter')" id="tab-newsletter">Newsletters <span class="count" id="count-newsletter">0</span></button>
-      <button class="filter-tab" onclick="setFilter('unread')" id="tab-unread">Old Unread <span class="count" id="count-unread">0</span></button>
       <button class="filter-tab" onclick="setFilter('spam')" id="tab-spam">Spam <span class="count" id="count-spam">0</span></button>
+      <button class="filter-tab" onclick="setFilter('read')" id="tab-read">Old Read <span class="count" id="count-read">0</span></button>
+      <button class="filter-tab" onclick="setFilter('unread')" id="tab-unread">Unread <span class="count" id="count-unread">0</span></button>
     </div>
 
     <div class="bulk-bar">
@@ -884,69 +257,78 @@
     </div>
 
     <div class="email-list" id="email-list"></div>
-  </div>
-</div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <h3>Delete Emails?</h3>
-    <p>You're about to permanently delete <strong id="modal-count">0</strong> emails. This action cannot be undone and will move them to your Gmail trash.</p>
-    <div class="modal-actions">
-      <button class="btn btn-danger" style="flex:1;justify-content:center;" onclick="confirmDelete()">Delete Permanently</button>
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <div class="blocked-section" id="blocked-section" style="display:none;">
+      <div class="blocked-header" onclick="toggleBlocked()">
+        <h3>🚫 Blocked Senders (<span id="blocked-count">0</span>)</h3>
+        <span id="blocked-toggle">▼</span>
+      </div>
+      <div class="blocked-list" id="blocked-list"></div>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- Delete Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3>Delete Emails?</h3>
+    <p>You're about to move <strong id="modal-count">0</strong> emails to Gmail Trash. This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-danger" style="flex:1;justify-content:center;" onclick="confirmDelete()">Delete</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-overlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Block Modal -->
+<div class="modal-overlay" id="block-modal-overlay">
+  <div class="modal block-modal">
+    <h3>Block Sender?</h3>
+    <p>Block <strong id="block-sender-name"></strong>? All their existing emails will be deleted and a Gmail filter will auto-trash future emails from them.</p>
+    <div class="modal-actions">
+      <button class="btn-block-confirm" onclick="confirmBlock()">🚫 Block & Delete All</button>
+      <button class="btn btn-ghost" onclick="closeModal('block-modal-overlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── State ───────────────────────────────────────────────────────────
-let gapi_loaded = false;
 let accessToken = null;
 let demoMode = false;
 let allEmails = [];
 let filtered = [];
 let selectedIds = new Set();
+let blockedSenders = new Set();
 let currentFilter = 'all';
+let pendingBlockEmail = null;
+let blockedOpen = true;
 
-// ─── Gmail OAuth ───────────────────────────────────────────────────────
-const SCOPES = 'https://www.googleapis.com/auth/gmail.modify';
+const SCOPES = 'https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.settings.basic';
 
 function connectGmail() {
   const clientId = document.getElementById('client-id-input').value.trim();
   if (!clientId || !clientId.includes('.apps.googleusercontent.com')) {
-    showToast('Please enter a valid Google OAuth Client ID', 'error');
-    return;
+    showToast('Please enter a valid Google OAuth Client ID', 'error'); return;
   }
-
-  const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
-  const params = {
+  const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: window.location.href.split('?')[0],
+    redirect_uri: window.location.origin + window.location.pathname,
     response_type: 'token',
     scope: SCOPES,
-    include_granted_scopes: 'true',
-    state: 'pass-through-value'
-  };
-
-  const url = oauth2Endpoint + '?' + Object.entries(params).map(([k,v]) => `${k}=${encodeURIComponent(v)}`).join('&');
-  window.location = url;
+    include_granted_scopes: 'true'
+  });
+  window.location = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
 }
 
-// Handle OAuth redirect token
 function checkOAuthCallback() {
   const hash = window.location.hash;
   if (hash.includes('access_token')) {
     const params = new URLSearchParams(hash.substring(1));
     accessToken = params.get('access_token');
     window.history.replaceState({}, document.title, window.location.pathname);
-    if (accessToken) {
-      demoMode = false;
-      fetchUserEmail();
-    }
+    if (accessToken) fetchUserEmail();
   }
 }
 
@@ -957,378 +339,323 @@ async function fetchUserEmail() {
     });
     const data = await resp.json();
     document.getElementById('connected-email').textContent = data.emailAddress || 'your account';
-    startScan();
-  } catch(e) {
-    showToast('Failed to fetch profile. Check your token.', 'error');
-  }
+    demoMode = false;
+    showPanel('scan');
+    startGmailScan();
+  } catch(e) { showToast('Connection failed. Try again.', 'error'); }
 }
 
-// ─── Gmail API scanning ────────────────────────────────────────────────
 async function startGmailScan() {
-  showPanel('scan');
+  allEmails = []; selectedIds.clear(); blockedSenders.clear();
+  let pageToken = null, messageIds = [];
+  addLog('Fetching all inbox messages (read + unread)…', 'neutral');
 
-  let pageToken = null;
-  let messageIds = [];
-  const log = document.getElementById('live-log');
-
-  // Fetch up to 200 message IDs (multiple pages)
-  addLog('Fetching inbox message IDs…', 'neutral');
   do {
-    let url = `https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:inbox`;
+    let url = `https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=100&q=in:inbox`;
     if (pageToken) url += `&pageToken=${pageToken}`;
     const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
     const data = await resp.json();
     if (data.messages) messageIds.push(...data.messages.map(m => m.id));
     pageToken = data.nextPageToken;
-  } while (pageToken && messageIds.length < 200);
+  } while (pageToken && messageIds.length < 500);
 
   const total = messageIds.length;
-  addLog(`Found ${total} messages. Starting AI classification…`, 'neutral');
+  addLog(`Found ${total} messages. Classifying…`, 'neutral');
 
-  allEmails = [];
-  let promoCount = 0, newsletterCount = 0, unreadCount = 0;
+  let promoC = 0, nlC = 0, spamC = 0;
 
-  for (let i = 0; i < Math.min(total, 100); i++) {
-    updateProgress(i, Math.min(total, 100));
-
-    const resp = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${messageIds[i]}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=List-Unsubscribe`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
+  for (let i = 0; i < total; i++) {
+    updateProgress(i + 1, total);
+    const resp = await fetch(
+      `https://www.googleapis.com/gmail/v1/users/me/messages/${messageIds[i]}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=List-Unsubscribe`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
     const msg = await resp.json();
+    const hdrs = {};
+    (msg.payload?.headers || []).forEach(h => hdrs[h.name] = h.value);
 
-    const headers = {};
-    (msg.payload?.headers || []).forEach(h => headers[h.name] = h.value);
     const isUnread = msg.labelIds?.includes('UNREAD');
-    const isPromo = msg.labelIds?.includes('CATEGORY_PROMOTIONS');
-    const isNewsletter = !!headers['List-Unsubscribe'];
-    const isSpam = msg.labelIds?.includes('SPAM');
+    const isPromo  = msg.labelIds?.includes('CATEGORY_PROMOTIONS');
+    const isSpam   = msg.labelIds?.includes('SPAM');
+    const hasList  = !!hdrs['List-Unsubscribe'];
+    const isSocial = msg.labelIds?.includes('CATEGORY_SOCIAL');
 
-    let category = null;
-    if (isSpam) category = 'spam';
-    else if (isPromo) { category = 'promo'; promoCount++; }
-    else if (isNewsletter) { category = 'newsletter'; newsletterCount++; }
-    else if (isUnread) { category = 'unread'; unreadCount++; }
+    let cat;
+    if (isSpam)              { cat = 'spam';       spamC++; }
+    else if (isPromo)        { cat = 'promo';      promoC++; }
+    else if (hasList)        { cat = 'newsletter'; nlC++; }
+    else if (isSocial)       { cat = 'social'; }
+    else if (!isUnread)      { cat = 'read'; }
+    else                     { cat = 'unread'; }
 
-    if (category) {
-      const email = {
-        id: messageIds[i],
-        sender: headers['From'] || 'Unknown',
-        subject: headers['Subject'] || '(no subject)',
-        date: formatDate(headers['Date']),
-        category,
-        selected: false
-      };
-      allEmails.push(email);
-      updateStats(promoCount, newsletterCount, unreadCount);
-      if (i % 5 === 0) addLog(`Analyzed: "${email.subject.substring(0, 40)}…"`, 
-        category === 'spam' ? 'bad' : category === 'promo' ? 'bad' : 'neutral');
-    }
+    allEmails.push({ id: messageIds[i], sender: hdrs['From'] || 'Unknown', subject: hdrs['Subject'] || '(no subject)', date: formatDate(hdrs['Date']), category: cat });
+    updateStats(promoC, nlC, spamC, allEmails.length);
+    if (i % 10 === 0) addLog(`[${cat}] ${(hdrs['Subject'] || '').substring(0,55)}`, cat === 'spam' || cat === 'promo' ? 'bad' : 'neutral');
   }
-
-  updateProgress(100, 100);
-  addLog(`✓ Scan complete. ${allEmails.length} cleanup candidates found.`, 'good');
-  setTimeout(() => showResults(), 1200);
+  addLog(`✓ Scan complete. ${allEmails.length} emails classified.`, 'good');
+  setTimeout(showResults, 1000);
 }
 
-// ─── Demo Mode ────────────────────────────────────────────────────────
+// Demo data
 const DEMO_EMAILS = [
-  { id:'1', sender:'Amazon.com <shipment-tracking@amazon.com>', subject:'Your order has shipped! Track it now', date:'3d ago', category:'promo' },
-  { id:'2', sender:'LinkedIn <messages-noreply@linkedin.com>', subject:'You have 14 new notifications', date:'1d ago', category:'newsletter' },
-  { id:'3', sender:'Groupon <deals@groupon.com>', subject:'🔥 80% off this weekend only — Don\'t miss out!', date:'5d ago', category:'promo' },
-  { id:'4', sender:'Medium Daily Digest <noreply@medium.com>', subject:'Your daily reads: 7 stories curated for you', date:'2d ago', category:'newsletter' },
-  { id:'5', sender:'Spotify <no-reply@spotify.com>', subject:'Your Wrapped is ready — see your 2024 stats', date:'7d ago', category:'promo' },
-  { id:'6', sender:'newsletter@producthunt.com>', subject:'Today\'s top products: 12 launches you need to see', date:'1d ago', category:'newsletter' },
-  { id:'7', sender:'Airbnb <automated@airbnb.com>', subject:'It\'s not too late to book your holiday getaway', date:'4d ago', category:'promo' },
-  { id:'8', sender:'Google Alerts <googlealerts-noreply@google.com>', subject:'Google Alert - artificial intelligence', date:'12d ago', category:'unread' },
-  { id:'9', sender:'Twitter/X <info@twitter.com>', subject:'See what\'s happening on X today', date:'8d ago', category:'promo' },
-  { id:'10', sender:'no-reply@github.com', subject:'[GitHub] A third-party OAuth application has been added', date:'20d ago', category:'unread' },
-  { id:'11', sender:'Notion <mail@mail.notion.so>', subject:'Your weekly digest: updates from your workspace', date:'3d ago', category:'newsletter' },
-  { id:'12', sender:'promo@booking.com', subject:'You left something behind — complete your booking', date:'6d ago', category:'promo' },
-  { id:'13', sender:'MailerLite <noreply@mailerlite.com>', subject:'SPAM: Get rich quick — guaranteed income from home', date:'2d ago', category:'spam' },
-  { id:'14', sender:'TechCrunch <newsletters@techcrunch.com>', subject:'TC Daily: The biggest tech stories of the week', date:'1d ago', category:'newsletter' },
-  { id:'15', sender:'Uber Eats <uber@uber.com>', subject:'Hungry? Here\'s $5 off your next order', date:'4d ago', category:'promo' },
-  { id:'16', sender:'coursera-noreply@coursera.org', subject:'Complete your Python certificate — only 2 modules left', date:'15d ago', category:'unread' },
-  { id:'17', sender:'bestbuy@emailinfo.bestbuy.com', subject:'FLASH SALE: Today only — up to 60% off electronics', date:'2d ago', category:'promo' },
-  { id:'18', sender:'Duolingo <hello@duolingo.com>', subject:'You have a 7-day streak! Don\'t break it now 🔥', date:'1d ago', category:'newsletter' },
+  {id:'1',  sender:'Amazon.com <ship@amazon.com>',              subject:'Your order has shipped! Track it now',          date:'3d ago',  category:'promo'},
+  {id:'2',  sender:'LinkedIn <messages@linkedin.com>',          subject:'You have 14 new notifications waiting',         date:'1d ago',  category:'newsletter'},
+  {id:'3',  sender:'Groupon <deals@groupon.com>',               subject:'🔥 80% off this weekend only — Hurry!',         date:'5d ago',  category:'promo'},
+  {id:'4',  sender:'Medium <noreply@medium.com>',               subject:'Your daily reads: 7 curated stories',           date:'2d ago',  category:'newsletter'},
+  {id:'5',  sender:'Spotify <no-reply@spotify.com>',            subject:'Your Wrapped is here — 2024 stats',             date:'7d ago',  category:'promo'},
+  {id:'6',  sender:'Product Hunt <newsletter@producthunt.com>', subject:"Today's top 12 launches you need to see",       date:'1d ago',  category:'newsletter'},
+  {id:'7',  sender:'Airbnb <automated@airbnb.com>',             subject:"Book your holiday stay before it's gone",       date:'4d ago',  category:'promo'},
+  {id:'8',  sender:'Google Alerts <googlealerts@google.com>',   subject:'Google Alert - artificial intelligence',        date:'12d ago', category:'read'},
+  {id:'9',  sender:'Twitter/X <info@twitter.com>',              subject:"See what's happening on X today",               date:'8d ago',  category:'promo'},
+  {id:'10', sender:'GitHub <no-reply@github.com>',              subject:'[GitHub] OAuth application access granted',     date:'20d ago', category:'read'},
+  {id:'11', sender:'Notion <mail@notion.so>',                   subject:'Your weekly digest: workspace updates',         date:'3d ago',  category:'newsletter'},
+  {id:'12', sender:'Booking.com <promo@booking.com>',           subject:'Complete your booking before it expires',       date:'6d ago',  category:'promo'},
+  {id:'13', sender:'SpamCo <noreply@spamco.biz>',               subject:'Get rich quick — guaranteed results!!!',        date:'2d ago',  category:'spam'},
+  {id:'14', sender:'TechCrunch <newsletters@techcrunch.com>',   subject:'TC Daily: Biggest tech stories this week',      date:'1d ago',  category:'newsletter'},
+  {id:'15', sender:'Uber Eats <uber@uber.com>',                 subject:"Hungry? Here's $5 off your next order",         date:'4d ago',  category:'promo'},
+  {id:'16', sender:'Coursera <noreply@coursera.org>',           subject:'Complete your certificate — 2 modules left',    date:'15d ago', category:'read'},
+  {id:'17', sender:'Best Buy <email@bestbuy.com>',              subject:'FLASH SALE: Up to 60% off electronics today',   date:'2d ago',  category:'promo'},
+  {id:'18', sender:'Duolingo <hello@duolingo.com>',             subject:"7-day streak! Don't break it now 🔥",           date:'1d ago',  category:'newsletter'},
+  {id:'19', sender:'PayPal <service@paypal.com>',               subject:'Receipt for your recent payment — $24.99',      date:'10d ago', category:'read'},
+  {id:'20', sender:'Dropbox <no-reply@dropbox.com>',            subject:'A file was shared with you: Q3 Report.pdf',     date:'18d ago', category:'read'},
+  {id:'21', sender:'Pinterest <mail@pinterest.com>',            subject:'Sarah liked 3 of your pins this week',          date:'3d ago',  category:'social'},
+  {id:'22', sender:'Facebook <notification@facebookmail.com>',  subject:'You have 5 new friend requests',                date:'2d ago',  category:'social'},
+  {id:'23', sender:'Wix <info@wix.com>',                        subject:'Your site traffic is up 40% this month!',       date:'5d ago',  category:'newsletter'},
+  {id:'24', sender:'Bank of America <bofa@response.bofa.com>',  subject:'Your monthly statement is ready to view',       date:'4d ago',  category:'read'},
 ];
 
 function startDemo() {
   demoMode = true;
   document.getElementById('connected-email').textContent = 'demo@gmail.com';
   showPanel('scan');
-  runDemoScan();
-}
-
-function runDemoScan() {
-  let i = 0;
-  const total = 847;
-  let analyzed = 0;
-  let promoCount = 0, newsletterCount = 0, unreadCount = 0;
-  const statuses = [
-    'Connecting to Gmail API…',
-    'Fetching message list…',
-    'Loading message metadata…',
-    'Running AI classification…',
-    'Detecting promotional patterns…',
-    'Identifying newsletter senders…',
-    'Flagging old unread messages…',
-  ];
-  let statusIdx = 0;
-
-  const interval = setInterval(() => {
-    i += Math.floor(Math.random() * 18) + 8;
-    analyzed = Math.min(i, total);
-    const pct = Math.round((analyzed / total) * 100);
+  allEmails = []; selectedIds.clear(); blockedSenders.clear();
+  let i = 0, total = 1247, promoC = 0, nlC = 0, spamC = 0;
+  const statuses = ['Connecting to Gmail API…','Fetching all inbox messages (read & unread)…','Analyzing message headers…','Running AI classification…','Detecting promotional patterns…','Identifying newsletter senders…','Scanning for spam signatures…','Categorizing read emails…','Finalizing…'];
+  let si = 0;
+  const iv = setInterval(() => {
+    i += Math.floor(Math.random() * 22) + 10;
+    const analyzed = Math.min(i, total);
     updateProgress(analyzed, total);
-
-    if (statusIdx < statuses.length && analyzed > (statusIdx / statuses.length) * total) {
-      document.getElementById('scan-status-text').textContent = statuses[statusIdx++];
-    }
-
-    // Add fake discovered emails
-    if (analyzed < total) {
-      const demoIdx = Math.floor(Math.random() * DEMO_EMAILS.length);
-      const e = DEMO_EMAILS[demoIdx];
-      if (e.category === 'promo') promoCount = Math.min(promoCount+1, 12);
-      else if (e.category === 'newsletter') newsletterCount = Math.min(newsletterCount+1, 8);
-      else if (e.category === 'unread') unreadCount = Math.min(unreadCount+1, 4);
-      updateStats(promoCount, newsletterCount, unreadCount);
-
-      if (Math.random() > 0.7) {
-        addLog(`"${e.subject.substring(0,45)}…"`, 
-          e.category === 'spam' ? 'bad' : e.category === 'promo' ? 'bad' : 'neutral');
-      }
-    }
-
+    if (si < statuses.length && analyzed > (si / statuses.length) * total) document.getElementById('scan-status-text').textContent = statuses[si++];
+    const e = DEMO_EMAILS[Math.floor(Math.random() * DEMO_EMAILS.length)];
+    if (e.category==='promo') promoC = Math.min(promoC+1, 9);
+    else if (e.category==='newsletter') nlC = Math.min(nlC+1, 7);
+    else if (e.category==='spam') spamC = Math.min(spamC+1, 2);
+    updateStats(promoC, nlC, spamC, Math.min(analyzed, 24));
+    if (Math.random() > 0.75) addLog(`[${e.category}] ${e.subject.substring(0,55)}`, e.category==='spam'||e.category==='promo' ? 'bad' : 'neutral');
     if (analyzed >= total) {
-      clearInterval(interval);
+      clearInterval(iv);
       document.getElementById('scan-status-text').textContent = 'Scan complete!';
-      allEmails = DEMO_EMAILS;
-      addLog(`✓ Done. ${allEmails.length} emails flagged for cleanup.`, 'good');
-      setTimeout(() => showResults(), 1200);
+      allEmails = [...DEMO_EMAILS];
+      updateStats(9, 7, 2, DEMO_EMAILS.length);
+      addLog(`✓ Done. ${DEMO_EMAILS.length} emails categorized.`, 'good');
+      setTimeout(showResults, 1000);
     }
-  }, 120);
+  }, 90);
 }
 
-// ─── UI helpers ────────────────────────────────────────────────────────
 function showPanel(name) {
-  ['connect','scan','results'].forEach(p => {
-    document.getElementById(`panel-${p}`).classList.remove('active');
-  });
+  ['connect','scan','results'].forEach(p => document.getElementById(`panel-${p}`).classList.remove('active'));
   document.getElementById(`panel-${name}`).classList.add('active');
-
-  // Update steps
-  const stepMap = { connect: 1, scan: 2, results: 3 };
-  const current = stepMap[name];
-  for (let s = 1; s <= 3; s++) {
-    const el = document.getElementById(`step${s}`);
-    el.classList.remove('active','done');
-    if (s === current) el.classList.add('active');
-    else if (s < current) el.classList.add('done');
-  }
+  const map = {connect:1,scan:2,results:3};
+  const cur = map[name];
+  for (let s=1;s<=3;s++){const el=document.getElementById(`step${s}`);el.classList.remove('active','done');if(s===cur)el.classList.add('active');else if(s<cur)el.classList.add('done');}
 }
 
-function updateProgress(current, total) {
-  const pct = Math.round((current / total) * 100);
+function updateProgress(cur, total) {
+  const pct = Math.round((cur/total)*100);
   document.getElementById('progress-bar').style.width = pct + '%';
-  document.getElementById('scan-count').textContent = `${current} / ${total} emails analyzed`;
+  document.getElementById('scan-count').textContent = `${cur} / ${total} emails analyzed`;
   document.getElementById('scan-pct').textContent = pct + '%';
 }
 
-function updateStats(promo, newsletter, unread) {
-  document.getElementById('stat-promo').textContent = promo;
-  document.getElementById('stat-newsletter').textContent = newsletter;
-  document.getElementById('stat-unread').textContent = unread;
+function updateStats(p,n,s,t) {
+  document.getElementById('stat-promo').textContent = p;
+  document.getElementById('stat-newsletter').textContent = n;
+  document.getElementById('stat-spam').textContent = s;
+  document.getElementById('stat-total').textContent = t;
 }
 
-function addLog(msg, type = '') {
+function addLog(msg, type='') {
   const log = document.getElementById('live-log');
   const now = new Date();
-  const time = `${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  const t = `${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   const line = document.createElement('div');
   line.className = 'log-line';
-  line.innerHTML = `<span class="log-time">${time}</span><span class="log-msg ${type}">${msg}</span>`;
+  line.innerHTML = `<span class="log-time">${t}</span><span class="log-msg ${type}">${msg}</span>`;
   log.appendChild(line);
   log.scrollTop = log.scrollHeight;
-  // Keep max 30 lines
-  while (log.children.length > 30) log.removeChild(log.firstChild);
+  while(log.children.length>40) log.removeChild(log.firstChild);
 }
 
 function showResults() {
   showPanel('results');
-  filtered = [...allEmails];
   renderEmailList();
   updateTabCounts();
-  document.getElementById('results-summary').textContent = 
-    `AI identified ${allEmails.length} emails you can safely delete`;
+  const cats = {};
+  allEmails.forEach(e => cats[e.category] = (cats[e.category]||0)+1);
+  const clutter = (cats.promo||0)+(cats.newsletter||0)+(cats.spam||0);
+  document.getElementById('results-summary').textContent = `${allEmails.length} emails scanned — ${clutter} promotional/spam found`;
 }
 
 function renderEmailList() {
   const list = document.getElementById('email-list');
   list.innerHTML = '';
-
-  const display = currentFilter === 'all' ? allEmails : allEmails.filter(e => e.category === currentFilter);
-  filtered = display;
+  filtered = currentFilter==='all' ? allEmails : allEmails.filter(e=>e.category===currentFilter);
   updateSelectedCount();
-
-  if (display.length === 0) {
-    list.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-size:12px;">No emails in this category</div>`;
-    return;
-  }
-
-  display.forEach(email => {
+  if (!filtered.length) { list.innerHTML=`<div style="padding:40px;text-align:center;color:var(--muted);font-size:12px;">No emails in this category 🎉</div>`; return; }
+  const tagLabels  = {promo:'Promo',newsletter:'Newsletter',unread:'Unread',read:'Read',spam:'Spam',social:'Social'};
+  const tagClasses = {promo:'tag-promo',newsletter:'tag-newsletter',unread:'tag-unread',read:'tag-read',spam:'tag-spam',social:'tag-social'};
+  filtered.forEach(email => {
+    const isBlocked = blockedSenders.has(extractEmail(email.sender));
     const item = document.createElement('div');
     item.className = 'email-item' + (selectedIds.has(email.id) ? ' selected' : '');
     item.dataset.id = email.id;
-
-    const tagClass = {promo:'tag-promo',newsletter:'tag-newsletter',unread:'tag-unread',spam:'tag-spam',social:'tag-social'}[email.category] || '';
-    const tagLabel = {promo:'Promo',newsletter:'Newsletter',unread:'Old Unread',spam:'Spam',social:'Social'}[email.category] || email.category;
-
     item.innerHTML = `
-      <div class="email-check ${selectedIds.has(email.id) ? 'checked' : ''}" onclick="toggleSelect('${email.id}', this, event)"></div>
+      <div class="email-check ${selectedIds.has(email.id)?'checked':''}" onclick="toggleSelect('${email.id}',this,event)"></div>
       <div class="email-info">
         <div class="email-sender">${escHtml(email.sender)}</div>
         <div class="email-subject">${escHtml(email.subject)}</div>
       </div>
-      <div class="email-tag ${tagClass}">${tagLabel}</div>
+      <div class="email-tag ${tagClasses[email.category]||''}">${tagLabels[email.category]||email.category}</div>
       <div class="email-meta">${email.date}</div>
-    `;
+      <button class="btn-block ${isBlocked?'is-blocked':''}" onclick="openBlockModal('${email.id}',event)">
+        ${isBlocked ? '🚫 Blocked' : '🚫 Block'}
+      </button>`;
     list.appendChild(item);
   });
 }
 
 function toggleSelect(id, el, e) {
   e.stopPropagation();
-  if (selectedIds.has(id)) {
-    selectedIds.delete(id);
-    el.classList.remove('checked');
-    el.closest('.email-item').classList.remove('selected');
-  } else {
-    selectedIds.add(id);
-    el.classList.add('checked');
-    el.closest('.email-item').classList.add('selected');
-  }
+  if(selectedIds.has(id)){selectedIds.delete(id);el.classList.remove('checked');el.closest('.email-item').classList.remove('selected');}
+  else{selectedIds.add(id);el.classList.add('checked');el.closest('.email-item').classList.add('selected');}
   updateSelectedCount();
 }
 
-function updateSelectedCount() {
-  document.getElementById('selected-count').textContent = selectedIds.size;
-}
-
-function selectAll() {
-  filtered.forEach(e => selectedIds.add(e.id));
-  renderEmailList();
-}
-
-function selectNone() {
-  selectedIds.clear();
-  renderEmailList();
-}
+function updateSelectedCount() { document.getElementById('selected-count').textContent = selectedIds.size; }
+function selectAll() { filtered.forEach(e=>selectedIds.add(e.id)); renderEmailList(); }
+function selectNone() { selectedIds.clear(); renderEmailList(); }
 
 function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  currentFilter=f;
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(`tab-${f}`).classList.add('active');
   renderEmailList();
 }
 
 function updateTabCounts() {
   document.getElementById('count-all').textContent = allEmails.length;
-  ['promo','newsletter','unread','spam'].forEach(cat => {
-    document.getElementById(`count-${cat}`).textContent = allEmails.filter(e => e.category === cat).length;
+  ['promo','newsletter','spam','read','unread'].forEach(cat=>document.getElementById(`count-${cat}`).textContent=allEmails.filter(e=>e.category===cat).length);
+}
+
+// Block
+function extractEmail(sender) { const m=sender.match(/<(.+?)>/); return m?m[1]:sender; }
+
+function openBlockModal(emailId, e) {
+  e.stopPropagation();
+  const email = allEmails.find(em=>em.id===emailId);
+  if(!email) return;
+  const se = extractEmail(email.sender);
+  if(blockedSenders.has(se)) return;
+  pendingBlockEmail = email;
+  document.getElementById('block-sender-name').textContent = se;
+  document.getElementById('block-modal-overlay').classList.add('open');
+}
+
+async function confirmBlock() {
+  closeModal('block-modal-overlay');
+  if(!pendingBlockEmail) return;
+  const se = extractEmail(pendingBlockEmail.sender);
+  blockedSenders.add(se);
+  const toDelete = allEmails.filter(e=>extractEmail(e.sender)===se).map(e=>e.id);
+
+  if(!demoMode && accessToken) {
+    try {
+      await fetch('https://www.googleapis.com/gmail/v1/users/me/settings/filters', {
+        method:'POST',
+        headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},
+        body:JSON.stringify({criteria:{from:se},action:{addLabelIds:['TRASH'],removeLabelIds:['INBOX']}})
+      });
+    } catch(err){}
+    for(const id of toDelete){
+      try{ await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${id}/trash`,{method:'POST',headers:{Authorization:`Bearer ${accessToken}`}}); }catch(err){}
+    }
+  }
+
+  allEmails = allEmails.filter(e=>!toDelete.includes(e.id));
+  toDelete.forEach(id=>selectedIds.delete(id));
+  updateTabCounts(); renderEmailList(); renderBlockedList();
+  document.getElementById('results-summary').textContent = `${allEmails.length} emails remaining`;
+  showToast(`🚫 Blocked ${se} — ${toDelete.length} email${toDelete.length!==1?'s':''} deleted`, 'block-toast');
+  pendingBlockEmail = null;
+}
+
+function renderBlockedList() {
+  const section = document.getElementById('blocked-section');
+  if(!blockedSenders.size){section.style.display='none';return;}
+  section.style.display='block';
+  document.getElementById('blocked-count').textContent = blockedSenders.size;
+  const list = document.getElementById('blocked-list');
+  list.innerHTML='';
+  blockedSenders.forEach(s=>{
+    const chip=document.createElement('div');chip.className='blocked-chip';
+    chip.innerHTML=`${escHtml(s)} <span class="remove" onclick="unblock('${escHtml(s)}')" title="Unblock">✕</span>`;
+    list.appendChild(chip);
   });
 }
 
-function openDeleteModal() {
-  if (selectedIds.size === 0) { showToast('Select at least one email first', 'error'); return; }
-  document.getElementById('modal-count').textContent = selectedIds.size;
-  document.getElementById('modal-overlay').classList.add('open');
-}
+function unblock(s){blockedSenders.delete(s);renderBlockedList();renderEmailList();showToast(`Unblocked ${s}`, '');}
+function toggleBlocked(){blockedOpen=!blockedOpen;document.getElementById('blocked-list').style.display=blockedOpen?'flex':'none';document.getElementById('blocked-toggle').textContent=blockedOpen?'▼':'▶';}
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-}
+function openDeleteModal(){if(!selectedIds.size){showToast('Select at least one email first','error');return;}document.getElementById('modal-count').textContent=selectedIds.size;document.getElementById('modal-overlay').classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-async function confirmDelete() {
-  closeModal();
-  const ids = [...selectedIds];
-
-  if (demoMode) {
-    // Simulate deletion
-    allEmails = allEmails.filter(e => !selectedIds.has(e.id));
-    selectedIds.clear();
-    updateTabCounts();
-    renderEmailList();
-    showToast(`✓ ${ids.length} emails deleted (demo mode)`, 'success');
-    document.getElementById('results-summary').textContent = `${allEmails.length} emails remaining`;
-    return;
+async function confirmDelete(){
+  closeModal('modal-overlay');
+  const ids=[...selectedIds];
+  if(demoMode){
+    allEmails=allEmails.filter(e=>!selectedIds.has(e.id));selectedIds.clear();
+    updateTabCounts();renderEmailList();
+    document.getElementById('results-summary').textContent=`${allEmails.length} emails remaining`;
+    showToast(`✓ ${ids.length} emails deleted (demo)`,'success');return;
   }
-
-  // Real Gmail API batch delete
-  showToast(`Deleting ${ids.length} emails…`, '');
-  let done = 0;
-  for (const id of ids) {
-    try {
-      await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${id}/trash`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      done++;
-    } catch(e) {}
-  }
-
-  allEmails = allEmails.filter(e => !selectedIds.has(e.id));
-  selectedIds.clear();
-  updateTabCounts();
-  renderEmailList();
-  showToast(`✓ ${done} emails moved to trash`, 'success');
-  document.getElementById('results-summary').textContent = `${allEmails.length} emails remaining`;
+  showToast(`Deleting ${ids.length} emails…`,'');
+  let done=0;
+  for(const id of ids){try{await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${id}/trash`,{method:'POST',headers:{Authorization:`Bearer ${accessToken}`}});done++;}catch(e){}}
+  allEmails=allEmails.filter(e=>!selectedIds.has(e.id));selectedIds.clear();
+  updateTabCounts();renderEmailList();
+  document.getElementById('results-summary').textContent=`${allEmails.length} emails remaining`;
+  showToast(`✓ ${done} emails moved to trash`,'success');
 }
 
-function rescan() {
-  allEmails = [];
-  selectedIds.clear();
-  if (demoMode) {
-    showPanel('scan');
-    document.getElementById('live-log').innerHTML = '<div class="log-line"><span class="log-time">00:00</span><span class="log-msg neutral">— Reinitializing…</span></div>';
-    document.getElementById('progress-bar').style.width = '0%';
-    runDemoScan();
-  } else {
-    startGmailScan();
-  }
-}
-
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast ${type}`;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return 'Unknown';
-  try {
-    const d = new Date(dateStr);
-    const diff = Date.now() - d.getTime();
-    const days = Math.floor(diff / 86400000);
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    return `${days}d ago`;
-  } catch { return dateStr; }
-}
-
-// ─── Init ──────────────────────────────────────────────────────────────
-checkOAuthCallback();
-
-async function startScan() {
+function rescan(){
+  allEmails=[];selectedIds.clear();blockedSenders.clear();
+  document.getElementById('blocked-section').style.display='none';
+  document.getElementById('live-log').innerHTML='<div class="log-line"><span class="log-time">00:00</span><span class="log-msg neutral">— Reinitializing…</span></div>';
+  document.getElementById('progress-bar').style.width='0%';
   showPanel('scan');
-  await startGmailScan();
+  if(demoMode) startDemo(); else startGmailScan();
 }
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type}`;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function formatDate(dateStr){
+  if(!dateStr) return 'Unknown';
+  try{
+    const d=new Date(dateStr),diff=Date.now()-d.getTime(),days=Math.floor(diff/86400000);
+    if(days===0) return 'Today';if(days===1) return 'Yesterday';
+    if(days<30) return `${days}d ago`;if(days<365) return `${Math.floor(days/30)}mo ago`;
+    return `${Math.floor(days/365)}y ago`;
+  }catch{return dateStr;}
+}
+
+checkOAuthCallback();
 </script>
 </body>
 </html>
