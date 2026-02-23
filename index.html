@@ -435,36 +435,39 @@ async function startGmailScan() {
 }
 
 // Demo data
+// Decode [at] back to @ (prevents Cloudflare email obfuscation breaking JS)
+function at(s){ return s.replace(/\[at\]/g,'@'); }
+
 const DEMO_EMAILS = [
-  {id:'1',  sender:'Amazon.com <ship@amazon.com>',              subject:'Your order has shipped! Track it now',          date:'3d ago',  category:'promo'},
-  {id:'2',  sender:'LinkedIn <messages@linkedin.com>',          subject:'You have 14 new notifications waiting',         date:'1d ago',  category:'newsletter'},
-  {id:'3',  sender:'Groupon <deals@groupon.com>',               subject:'🔥 80% off this weekend only — Hurry!',         date:'5d ago',  category:'promo'},
-  {id:'4',  sender:'Medium <noreply@medium.com>',               subject:'Your daily reads: 7 curated stories',           date:'2d ago',  category:'newsletter'},
-  {id:'5',  sender:'Spotify <no-reply@spotify.com>',            subject:'Your Wrapped is here — 2024 stats',             date:'7d ago',  category:'promo'},
-  {id:'6',  sender:'Product Hunt <newsletter@producthunt.com>', subject:"Today's top 12 launches you need to see",       date:'1d ago',  category:'newsletter'},
-  {id:'7',  sender:'Airbnb <automated@airbnb.com>',             subject:"Book your holiday stay before it's gone",       date:'4d ago',  category:'promo'},
-  {id:'8',  sender:'Google Alerts <googlealerts@google.com>',   subject:'Google Alert - artificial intelligence',        date:'12d ago', category:'read'},
-  {id:'9',  sender:'Twitter/X <info@twitter.com>',              subject:"See what's happening on X today",               date:'8d ago',  category:'promo'},
-  {id:'10', sender:'GitHub <no-reply@github.com>',              subject:'[GitHub] OAuth application access granted',     date:'20d ago', category:'read'},
-  {id:'11', sender:'Notion <mail@notion.so>',                   subject:'Your weekly digest: workspace updates',         date:'3d ago',  category:'newsletter'},
-  {id:'12', sender:'Booking.com <promo@booking.com>',           subject:'Complete your booking before it expires',       date:'6d ago',  category:'promo'},
-  {id:'13', sender:'SpamCo <noreply@spamco.biz>',               subject:'Get rich quick — guaranteed results!!!',        date:'2d ago',  category:'spam'},
-  {id:'14', sender:'TechCrunch <newsletters@techcrunch.com>',   subject:'TC Daily: Biggest tech stories this week',      date:'1d ago',  category:'newsletter'},
-  {id:'15', sender:'Uber Eats <uber@uber.com>',                 subject:"Hungry? Here's $5 off your next order",         date:'4d ago',  category:'promo'},
-  {id:'16', sender:'Coursera <noreply@coursera.org>',           subject:'Complete your certificate — 2 modules left',    date:'15d ago', category:'read'},
-  {id:'17', sender:'Best Buy <email@bestbuy.com>',              subject:'FLASH SALE: Up to 60% off electronics today',   date:'2d ago',  category:'promo'},
-  {id:'18', sender:'Duolingo <hello@duolingo.com>',             subject:"7-day streak! Don't break it now 🔥",           date:'1d ago',  category:'newsletter'},
-  {id:'19', sender:'PayPal <service@paypal.com>',               subject:'Receipt for your recent payment — $24.99',      date:'10d ago', category:'read'},
-  {id:'20', sender:'Dropbox <no-reply@dropbox.com>',            subject:'A file was shared with you: Q3 Report.pdf',     date:'18d ago', category:'read'},
-  {id:'21', sender:'Pinterest <mail@pinterest.com>',            subject:'Sarah liked 3 of your pins this week',          date:'3d ago',  category:'social'},
-  {id:'22', sender:'Facebook <notification@facebookmail.com>',  subject:'You have 5 new friend requests',                date:'2d ago',  category:'social'},
-  {id:'23', sender:'Wix <info@wix.com>',                        subject:'Your site traffic is up 40% this month!',       date:'5d ago',  category:'newsletter'},
-  {id:'24', sender:'Bank of America <bofa@response.bofa.com>',  subject:'Your monthly statement is ready to view',       date:'4d ago',  category:'read'},
+  {id:'1',  sender:at('Amazon.com <ship[at]amazon.com>'),              subject:'Your order has shipped! Track it now',          date:'3d ago',  category:'promo'},
+  {id:'2',  sender:at('LinkedIn <messages[at]linkedin.com>'),          subject:'You have 14 new notifications waiting',         date:'1d ago',  category:'newsletter'},
+  {id:'3',  sender:at('Groupon <deals[at]groupon.com>'),               subject:'80% off this weekend only — Hurry!',            date:'5d ago',  category:'promo'},
+  {id:'4',  sender:at('Medium <noreply[at]medium.com>'),               subject:'Your daily reads: 7 curated stories',           date:'2d ago',  category:'newsletter'},
+  {id:'5',  sender:at('Spotify <no-reply[at]spotify.com>'),            subject:'Your Wrapped is here — 2024 stats',             date:'7d ago',  category:'promo'},
+  {id:'6',  sender:at('Product Hunt <newsletter[at]producthunt.com>'), subject:"Today's top 12 launches you need to see",       date:'1d ago',  category:'newsletter'},
+  {id:'7',  sender:at('Airbnb <automated[at]airbnb.com>'),             subject:"Book your holiday stay before it's gone",       date:'4d ago',  category:'promo'},
+  {id:'8',  sender:at('Google Alerts <googlealerts[at]google.com>'),   subject:'Google Alert - artificial intelligence',        date:'12d ago', category:'read'},
+  {id:'9',  sender:at('Twitter/X <info[at]twitter.com>'),              subject:"See what's happening on X today",               date:'8d ago',  category:'promo'},
+  {id:'10', sender:at('GitHub <no-reply[at]github.com>'),              subject:'[GitHub] OAuth application access granted',     date:'20d ago', category:'read'},
+  {id:'11', sender:at('Notion <mail[at]notion.so>'),                   subject:'Your weekly digest: workspace updates',         date:'3d ago',  category:'newsletter'},
+  {id:'12', sender:at('Booking.com <promo[at]booking.com>'),           subject:'Complete your booking before it expires',       date:'6d ago',  category:'promo'},
+  {id:'13', sender:at('SpamCo <noreply[at]spamco.biz>'),               subject:'Get rich quick — guaranteed results!!!',        date:'2d ago',  category:'spam'},
+  {id:'14', sender:at('TechCrunch <newsletters[at]techcrunch.com>'),   subject:'TC Daily: Biggest tech stories this week',      date:'1d ago',  category:'newsletter'},
+  {id:'15', sender:at('Uber Eats <uber[at]uber.com>'),                 subject:"Hungry? Here's $5 off your next order",         date:'4d ago',  category:'promo'},
+  {id:'16', sender:at('Coursera <noreply[at]coursera.org>'),           subject:'Complete your certificate — 2 modules left',   date:'15d ago', category:'read'},
+  {id:'17', sender:at('Best Buy <email[at]bestbuy.com>'),              subject:'FLASH SALE: Up to 60% off electronics today',   date:'2d ago',  category:'promo'},
+  {id:'18', sender:at('Duolingo <hello[at]duolingo.com>'),             subject:"7-day streak! Don't break it now",              date:'1d ago',  category:'newsletter'},
+  {id:'19', sender:at('PayPal <service[at]paypal.com>'),               subject:'Receipt for your recent payment — $24.99',     date:'10d ago', category:'read'},
+  {id:'20', sender:at('Dropbox <no-reply[at]dropbox.com>'),            subject:'A file was shared with you: Q3 Report.pdf',    date:'18d ago', category:'read'},
+  {id:'21', sender:at('Pinterest <mail[at]pinterest.com>'),            subject:'Sarah liked 3 of your pins this week',         date:'3d ago',  category:'social'},
+  {id:'22', sender:at('Facebook <notification[at]facebookmail.com>'),  subject:'You have 5 new friend requests',               date:'2d ago',  category:'social'},
+  {id:'23', sender:at('Wix <info[at]wix.com>'),                        subject:'Your site traffic is up 40% this month!',      date:'5d ago',  category:'newsletter'},
+  {id:'24', sender:at('Bank of America <bofa[at]response.bofa.com>'),  subject:'Your monthly statement is ready to view',      date:'4d ago',  category:'read'},
 ];
 
 function startDemo() {
   demoMode = true;
-  document.getElementById('connected-email').textContent = 'demo@gmail.com';
+  document.getElementById('connected-email').textContent = at('demo[at]gmail.com');
   showPanel('scan');
   allEmails = []; selectedIds.clear(); blockedSenders.clear();
   let i = 0, total = 1247, promoC = 0, nlC = 0, spamC = 0;
@@ -785,14 +788,22 @@ function formatDate(dateStr){
    }catch{return dateStr;}
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('btn-google-signin').addEventListener('click', connectGmail);
-  document.getElementById('btn-demo').addEventListener('click', startDemo);
+function initApp() {
+  const googleBtn = document.getElementById('btn-google-signin');
+  const demoBtn = document.getElementById('btn-demo');
+  if (googleBtn) googleBtn.addEventListener('click', connectGmail);
+  if (demoBtn) demoBtn.addEventListener('click', startDemo);
   checkOAuthCallback();
   if (accessToken && !window.location.hash.includes('access_token')) {
     fetchUserEmail();
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 </script>
 </body>
 </html>
