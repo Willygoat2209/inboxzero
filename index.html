@@ -155,10 +155,27 @@
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: var(--surface); }
   ::-webkit-scrollbar-thumb { background: var(--border); }
+  /* Suggested unsubscriptions */
+  .unsub-section { margin-top: 24px; border: 1px solid rgba(71,255,232,0.2); background: rgba(71,255,232,0.03); }
+  .unsub-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid rgba(71,255,232,0.15); cursor: pointer; }
+  .unsub-header h3 { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent2); display: flex; align-items: center; gap: 10px; }
+  .unsub-header .toggle { color: var(--accent2); font-size: 12px; }
+  .unsub-grid { padding: 16px 20px; display: flex; flex-direction: column; gap: 2px; }
+  .unsub-item { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); padding: 14px 16px; transition: border-color 0.2s; }
+  .unsub-item:hover { border-color: var(--accent2); }
+  .unsub-info { min-width: 0; }
+  .unsub-sender { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+  .unsub-stats { font-size: 10px; color: var(--muted); }
+  .unsub-stats .never-opened { color: var(--danger); }
+  .unsub-badge { padding: 3px 10px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(71,255,232,0.08); border: 1px solid rgba(71,255,232,0.2); color: var(--accent2); white-space: nowrap; flex-shrink: 0; }
+  .btn-unsub { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(71,255,232,0.3); background: rgba(71,255,232,0.08); color: var(--accent2); transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
+  .btn-unsub:hover { background: rgba(71,255,232,0.2); border-color: var(--accent2); box-shadow: 0 0 10px rgba(71,255,232,0.2); }
+  .btn-unsub.done { opacity: 0.4; cursor: default; pointer-events: none; }
+  .unsub-empty { padding: 24px; text-align: center; font-size: 12px; color: var(--muted); }
+
   @media(max-width:640px){
-    .stats-row{grid-template-columns:repeat(2,1fr)}
-    .email-item{grid-template-columns:20px 1fr auto}
-    .email-tag,.email-meta{display:none}
+    .unsub-item { grid-template-columns: 1fr auto; }
+    .unsub-badge { display: none; }
   }
 </style>
 </head>
@@ -261,6 +278,15 @@
         <span id="blocked-toggle">▼</span>
       </div>
       <div class="blocked-list" id="blocked-list"></div>
+    </div>
+
+    <!-- Suggested Unsubscriptions -->
+    <div class="unsub-section" id="unsub-section" style="display:none;">
+      <div class="unsub-header" onclick="toggleUnsub()">
+        <h3>💡 Suggested Unsubscriptions (<span id="unsub-count">0</span>)</h3>
+        <span id="unsub-toggle">▼</span>
+      </div>
+      <div class="unsub-grid" id="unsub-grid"></div>
     </div>
   </div>
 </div>
@@ -508,6 +534,7 @@ function showResults() {
   allEmails.forEach(e => cats[e.category] = (cats[e.category]||0)+1);
   const clutter = (cats.promo||0)+(cats.newsletter||0)+(cats.spam||0);
   document.getElementById('results-summary').textContent = `${allEmails.length} emails scanned — ${clutter} promotional/spam found`;
+  buildUnsubSuggestions();
 }
 
 function renderEmailList() {
@@ -601,13 +628,91 @@ async function confirmBlock() {
 
   allEmails = allEmails.filter(e=>!toDelete.includes(e.id));
   toDelete.forEach(id=>selectedIds.delete(id));
-  updateTabCounts(); renderEmailList(); renderBlockedList();
+  updateTabCounts(); renderEmailList(); renderBlockedList(); buildUnsubSuggestions();
   document.getElementById('results-summary').textContent = `${allEmails.length} emails remaining`;
   showToast(`🚫 Blocked ${se} — ${toDelete.length} email${toDelete.length!==1?'s':''} deleted`, 'block-toast');
   pendingBlockEmail = null;
 }
 
-function renderBlockedList() {
+function buildUnsubSuggestions() {
+  // Group emails by sender domain/name
+  const senderMap = {};
+  allEmails.forEach(e => {
+    const key = extractEmail(e.sender);
+    if (!senderMap[key]) senderMap[key] = { sender: e.sender, total: 0, unread: 0, hasUnsub: e.category === 'newsletter' || e.category === 'promo' };
+    senderMap[key].total++;
+    if (e.category === 'unread' || (e.category !== 'read' && e.category !== 'spam')) {
+      // count as unread if all their emails are unread category
+    }
+    if (e.category === 'unread' || e.category === 'newsletter' || e.category === 'promo') {
+      senderMap[key].unread++;
+    }
+  });
+
+  // Find senders where 100% of emails are unread/promo/newsletter and they have 2+ emails
+  const suggestions = Object.entries(senderMap)
+    .filter(([email, data]) => data.total >= 2 && data.unread === data.total)
+    .map(([email, data]) => ({ email, ...data }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 10);
+
+  const section = document.getElementById('unsub-section');
+  const grid = document.getElementById('unsub-grid');
+  const count = document.getElementById('unsub-count');
+
+  if (!suggestions.length) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  count.textContent = suggestions.length;
+  grid.innerHTML = '';
+
+  suggestions.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'unsub-item';
+    item.id = `unsub-${btoa(s.email).replace(/=/g,'')}`;
+    const displayName = s.sender.replace(/<.*?>/, '').trim() || s.email;
+    item.innerHTML = `
+      <div class="unsub-info">
+        <div class="unsub-sender">${escHtml(displayName)}</div>
+        <div class="unsub-stats"><span class="never-opened">${s.total} email${s.total!==1?'s':''} — never opened</span></div>
+      </div>
+      <div class="unsub-badge">📧 ${s.total} emails</div>
+      <button class="btn-block" onclick="openBlockModal_unsub('${escHtml(s.email)}', event)" style="border-color:rgba(255,107,157,0.3);background:rgba(255,107,157,0.08);color:var(--block);">🚫 Block</button>
+      <button class="btn-unsub" onclick="markUnsubDone('${escHtml(s.email)}', this)">✓ Dismiss</button>
+    `;
+    grid.appendChild(item);
+  });
+}
+
+function openBlockModal_unsub(email, e) {
+  e.stopPropagation();
+  if (blockedSenders.has(email)) return;
+  // Find a matching email object to reuse confirmBlock logic
+  const match = allEmails.find(em => extractEmail(em.sender) === email);
+  if (match) { pendingBlockEmail = match; }
+  else { pendingBlockEmail = { sender: email, id: null }; }
+  document.getElementById('block-sender-name').textContent = email;
+  document.getElementById('block-modal-overlay').classList.add('open');
+}
+
+function markUnsubDone(email, btn) {
+  const id = `unsub-${btoa(email).replace(/=/g,'')}`;
+  const item = document.getElementById(id);
+  if (item) { item.style.opacity = '0'; item.style.transition = 'opacity 0.3s'; setTimeout(() => item.remove(), 300); }
+  const grid = document.getElementById('unsub-grid');
+  setTimeout(() => {
+    const remaining = grid.querySelectorAll('.unsub-item').length;
+    document.getElementById('unsub-count').textContent = remaining;
+    if (!remaining) document.getElementById('unsub-section').style.display = 'none';
+  }, 350);
+}
+
+let unsubOpen = true;
+function toggleUnsub() {
+  unsubOpen = !unsubOpen;
+  document.getElementById('unsub-grid').style.display = unsubOpen ? 'flex' : 'none';
+  document.getElementById('unsub-toggle').textContent = unsubOpen ? '▼' : '▶';
+}
   const section = document.getElementById('blocked-section');
   if(!blockedSenders.size){section.style.display='none';return;}
   section.style.display='block';
