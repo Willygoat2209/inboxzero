@@ -155,27 +155,10 @@
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: var(--surface); }
   ::-webkit-scrollbar-thumb { background: var(--border); }
-  /* Suggested unsubscriptions */
-  .unsub-section { margin-top: 24px; border: 1px solid rgba(71,255,232,0.2); background: rgba(71,255,232,0.03); }
-  .unsub-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid rgba(71,255,232,0.15); cursor: pointer; }
-  .unsub-header h3 { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent2); display: flex; align-items: center; gap: 10px; }
-  .unsub-header .toggle { color: var(--accent2); font-size: 12px; }
-  .unsub-grid { padding: 16px 20px; display: flex; flex-direction: column; gap: 2px; }
-  .unsub-item { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); padding: 14px 16px; transition: border-color 0.2s; }
-  .unsub-item:hover { border-color: var(--accent2); }
-  .unsub-info { min-width: 0; }
-  .unsub-sender { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
-  .unsub-stats { font-size: 10px; color: var(--muted); }
-  .unsub-stats .never-opened { color: var(--danger); }
-  .unsub-badge { padding: 3px 10px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(71,255,232,0.08); border: 1px solid rgba(71,255,232,0.2); color: var(--accent2); white-space: nowrap; flex-shrink: 0; }
-  .btn-unsub { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(71,255,232,0.3); background: rgba(71,255,232,0.08); color: var(--accent2); transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
-  .btn-unsub:hover { background: rgba(71,255,232,0.2); border-color: var(--accent2); box-shadow: 0 0 10px rgba(71,255,232,0.2); }
-  .btn-unsub.done { opacity: 0.4; cursor: default; pointer-events: none; }
-  .unsub-empty { padding: 24px; text-align: center; font-size: 12px; color: var(--muted); }
-
   @media(max-width:640px){
-    .unsub-item { grid-template-columns: 1fr auto; }
-    .unsub-badge { display: none; }
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .email-item{grid-template-columns:20px 1fr auto}
+    .email-tag,.email-meta{display:none}
   }
 </style>
 </head>
@@ -279,15 +262,6 @@
       </div>
       <div class="blocked-list" id="blocked-list"></div>
     </div>
-
-    <!-- Suggested Unsubscriptions -->
-    <div class="unsub-section" id="unsub-section" style="display:none;">
-      <div class="unsub-header" onclick="toggleUnsub()">
-        <h3>💡 Suggested Unsubscriptions (<span id="unsub-count">0</span>)</h3>
-        <span id="unsub-toggle">▼</span>
-      </div>
-      <div class="unsub-grid" id="unsub-grid"></div>
-    </div>
   </div>
 </div>
 
@@ -325,7 +299,7 @@
   <a href="/terms.html" style="color:var(--muted);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Terms of Service</a>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false">
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 let accessToken = sessionStorage.getItem('iz_token') || null;
 let demoMode = false;
 let allEmails = [];
@@ -435,39 +409,36 @@ async function startGmailScan() {
 }
 
 // Demo data
-// Decode [at] back to @ (prevents Cloudflare email obfuscation breaking JS)
-function at(s){ return s.replace(/\[at\]/g,'@'); }
-
 const DEMO_EMAILS = [
-  {id:'1',  sender:at('Amazon.com <ship[at]amazon.com>'),              subject:'Your order has shipped! Track it now',          date:'3d ago',  category:'promo'},
-  {id:'2',  sender:at('LinkedIn <messages[at]linkedin.com>'),          subject:'You have 14 new notifications waiting',         date:'1d ago',  category:'newsletter'},
-  {id:'3',  sender:at('Groupon <deals[at]groupon.com>'),               subject:'80% off this weekend only — Hurry!',            date:'5d ago',  category:'promo'},
-  {id:'4',  sender:at('Medium <noreply[at]medium.com>'),               subject:'Your daily reads: 7 curated stories',           date:'2d ago',  category:'newsletter'},
-  {id:'5',  sender:at('Spotify <no-reply[at]spotify.com>'),            subject:'Your Wrapped is here — 2024 stats',             date:'7d ago',  category:'promo'},
-  {id:'6',  sender:at('Product Hunt <newsletter[at]producthunt.com>'), subject:"Today's top 12 launches you need to see",       date:'1d ago',  category:'newsletter'},
-  {id:'7',  sender:at('Airbnb <automated[at]airbnb.com>'),             subject:"Book your holiday stay before it's gone",       date:'4d ago',  category:'promo'},
-  {id:'8',  sender:at('Google Alerts <googlealerts[at]google.com>'),   subject:'Google Alert - artificial intelligence',        date:'12d ago', category:'read'},
-  {id:'9',  sender:at('Twitter/X <info[at]twitter.com>'),              subject:"See what's happening on X today",               date:'8d ago',  category:'promo'},
-  {id:'10', sender:at('GitHub <no-reply[at]github.com>'),              subject:'[GitHub] OAuth application access granted',     date:'20d ago', category:'read'},
-  {id:'11', sender:at('Notion <mail[at]notion.so>'),                   subject:'Your weekly digest: workspace updates',         date:'3d ago',  category:'newsletter'},
-  {id:'12', sender:at('Booking.com <promo[at]booking.com>'),           subject:'Complete your booking before it expires',       date:'6d ago',  category:'promo'},
-  {id:'13', sender:at('SpamCo <noreply[at]spamco.biz>'),               subject:'Get rich quick — guaranteed results!!!',        date:'2d ago',  category:'spam'},
-  {id:'14', sender:at('TechCrunch <newsletters[at]techcrunch.com>'),   subject:'TC Daily: Biggest tech stories this week',      date:'1d ago',  category:'newsletter'},
-  {id:'15', sender:at('Uber Eats <uber[at]uber.com>'),                 subject:"Hungry? Here's $5 off your next order",         date:'4d ago',  category:'promo'},
-  {id:'16', sender:at('Coursera <noreply[at]coursera.org>'),           subject:'Complete your certificate — 2 modules left',   date:'15d ago', category:'read'},
-  {id:'17', sender:at('Best Buy <email[at]bestbuy.com>'),              subject:'FLASH SALE: Up to 60% off electronics today',   date:'2d ago',  category:'promo'},
-  {id:'18', sender:at('Duolingo <hello[at]duolingo.com>'),             subject:"7-day streak! Don't break it now",              date:'1d ago',  category:'newsletter'},
-  {id:'19', sender:at('PayPal <service[at]paypal.com>'),               subject:'Receipt for your recent payment — $24.99',     date:'10d ago', category:'read'},
-  {id:'20', sender:at('Dropbox <no-reply[at]dropbox.com>'),            subject:'A file was shared with you: Q3 Report.pdf',    date:'18d ago', category:'read'},
-  {id:'21', sender:at('Pinterest <mail[at]pinterest.com>'),            subject:'Sarah liked 3 of your pins this week',         date:'3d ago',  category:'social'},
-  {id:'22', sender:at('Facebook <notification[at]facebookmail.com>'),  subject:'You have 5 new friend requests',               date:'2d ago',  category:'social'},
-  {id:'23', sender:at('Wix <info[at]wix.com>'),                        subject:'Your site traffic is up 40% this month!',      date:'5d ago',  category:'newsletter'},
-  {id:'24', sender:at('Bank of America <bofa[at]response.bofa.com>'),  subject:'Your monthly statement is ready to view',      date:'4d ago',  category:'read'},
+  {id:'1',  sender:'Amazon.com <ship@amazon.com>',              subject:'Your order has shipped! Track it now',          date:'3d ago',  category:'promo'},
+  {id:'2',  sender:'LinkedIn <messages@linkedin.com>',          subject:'You have 14 new notifications waiting',         date:'1d ago',  category:'newsletter'},
+  {id:'3',  sender:'Groupon <deals@groupon.com>',               subject:'🔥 80% off this weekend only — Hurry!',         date:'5d ago',  category:'promo'},
+  {id:'4',  sender:'Medium <noreply@medium.com>',               subject:'Your daily reads: 7 curated stories',           date:'2d ago',  category:'newsletter'},
+  {id:'5',  sender:'Spotify <no-reply@spotify.com>',            subject:'Your Wrapped is here — 2024 stats',             date:'7d ago',  category:'promo'},
+  {id:'6',  sender:'Product Hunt <newsletter@producthunt.com>', subject:"Today's top 12 launches you need to see",       date:'1d ago',  category:'newsletter'},
+  {id:'7',  sender:'Airbnb <automated@airbnb.com>',             subject:"Book your holiday stay before it's gone",       date:'4d ago',  category:'promo'},
+  {id:'8',  sender:'Google Alerts <googlealerts@google.com>',   subject:'Google Alert - artificial intelligence',        date:'12d ago', category:'read'},
+  {id:'9',  sender:'Twitter/X <info@twitter.com>',              subject:"See what's happening on X today",               date:'8d ago',  category:'promo'},
+  {id:'10', sender:'GitHub <no-reply@github.com>',              subject:'[GitHub] OAuth application access granted',     date:'20d ago', category:'read'},
+  {id:'11', sender:'Notion <mail@notion.so>',                   subject:'Your weekly digest: workspace updates',         date:'3d ago',  category:'newsletter'},
+  {id:'12', sender:'Booking.com <promo@booking.com>',           subject:'Complete your booking before it expires',       date:'6d ago',  category:'promo'},
+  {id:'13', sender:'SpamCo <noreply@spamco.biz>',               subject:'Get rich quick — guaranteed results!!!',        date:'2d ago',  category:'spam'},
+  {id:'14', sender:'TechCrunch <newsletters@techcrunch.com>',   subject:'TC Daily: Biggest tech stories this week',      date:'1d ago',  category:'newsletter'},
+  {id:'15', sender:'Uber Eats <uber@uber.com>',                 subject:"Hungry? Here's $5 off your next order",         date:'4d ago',  category:'promo'},
+  {id:'16', sender:'Coursera <noreply@coursera.org>',           subject:'Complete your certificate — 2 modules left',    date:'15d ago', category:'read'},
+  {id:'17', sender:'Best Buy <email@bestbuy.com>',              subject:'FLASH SALE: Up to 60% off electronics today',   date:'2d ago',  category:'promo'},
+  {id:'18', sender:'Duolingo <hello@duolingo.com>',             subject:"7-day streak! Don't break it now 🔥",           date:'1d ago',  category:'newsletter'},
+  {id:'19', sender:'PayPal <service@paypal.com>',               subject:'Receipt for your recent payment — $24.99',      date:'10d ago', category:'read'},
+  {id:'20', sender:'Dropbox <no-reply@dropbox.com>',            subject:'A file was shared with you: Q3 Report.pdf',     date:'18d ago', category:'read'},
+  {id:'21', sender:'Pinterest <mail@pinterest.com>',            subject:'Sarah liked 3 of your pins this week',          date:'3d ago',  category:'social'},
+  {id:'22', sender:'Facebook <notification@facebookmail.com>',  subject:'You have 5 new friend requests',                date:'2d ago',  category:'social'},
+  {id:'23', sender:'Wix <info@wix.com>',                        subject:'Your site traffic is up 40% this month!',       date:'5d ago',  category:'newsletter'},
+  {id:'24', sender:'Bank of America <bofa@response.bofa.com>',  subject:'Your monthly statement is ready to view',       date:'4d ago',  category:'read'},
 ];
 
 function startDemo() {
   demoMode = true;
-  document.getElementById('connected-email').textContent = at('demo[at]gmail.com');
+  document.getElementById('connected-email').textContent = 'demo@gmail.com';
   showPanel('scan');
   allEmails = []; selectedIds.clear(); blockedSenders.clear();
   let i = 0, total = 1247, promoC = 0, nlC = 0, spamC = 0;
@@ -537,7 +508,6 @@ function showResults() {
   allEmails.forEach(e => cats[e.category] = (cats[e.category]||0)+1);
   const clutter = (cats.promo||0)+(cats.newsletter||0)+(cats.spam||0);
   document.getElementById('results-summary').textContent = `${allEmails.length} emails scanned — ${clutter} promotional/spam found`;
-  buildUnsubSuggestions();
 }
 
 function renderEmailList() {
@@ -631,91 +601,13 @@ async function confirmBlock() {
 
   allEmails = allEmails.filter(e=>!toDelete.includes(e.id));
   toDelete.forEach(id=>selectedIds.delete(id));
-  updateTabCounts(); renderEmailList(); renderBlockedList(); buildUnsubSuggestions();
+  updateTabCounts(); renderEmailList(); renderBlockedList();
   document.getElementById('results-summary').textContent = `${allEmails.length} emails remaining`;
   showToast(`🚫 Blocked ${se} — ${toDelete.length} email${toDelete.length!==1?'s':''} deleted`, 'block-toast');
   pendingBlockEmail = null;
 }
 
-function buildUnsubSuggestions() {
-  // Group emails by sender domain/name
-  const senderMap = {};
-  allEmails.forEach(e => {
-    const key = extractEmail(e.sender);
-    if (!senderMap[key]) senderMap[key] = { sender: e.sender, total: 0, unread: 0, hasUnsub: e.category === 'newsletter' || e.category === 'promo' };
-    senderMap[key].total++;
-    if (e.category === 'unread' || (e.category !== 'read' && e.category !== 'spam')) {
-      // count as unread if all their emails are unread category
-    }
-    if (e.category === 'unread' || e.category === 'newsletter' || e.category === 'promo') {
-      senderMap[key].unread++;
-    }
-  });
-
-  // Find senders where 100% of emails are unread/promo/newsletter and they have 2+ emails
-  const suggestions = Object.entries(senderMap)
-    .filter(([email, data]) => data.total >= 2 && data.unread === data.total)
-    .map(([email, data]) => ({ email, ...data }))
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 10);
-
-  const section = document.getElementById('unsub-section');
-  const grid = document.getElementById('unsub-grid');
-  const count = document.getElementById('unsub-count');
-
-  if (!suggestions.length) { section.style.display = 'none'; return; }
-
-  section.style.display = 'block';
-  count.textContent = suggestions.length;
-  grid.innerHTML = '';
-
-  suggestions.forEach(s => {
-    const item = document.createElement('div');
-    item.className = 'unsub-item';
-    item.id = `unsub-${btoa(s.email).replace(/=/g,'')}`;
-    const displayName = s.sender.replace(/<.*?>/, '').trim() || s.email;
-    item.innerHTML = `
-      <div class="unsub-info">
-        <div class="unsub-sender">${escHtml(displayName)}</div>
-        <div class="unsub-stats"><span class="never-opened">${s.total} email${s.total!==1?'s':''} — never opened</span></div>
-      </div>
-      <div class="unsub-badge">📧 ${s.total} emails</div>
-      <button class="btn-block" onclick="openBlockModal_unsub('${escHtml(s.email)}', event)" style="border-color:rgba(255,107,157,0.3);background:rgba(255,107,157,0.08);color:var(--block);">🚫 Block</button>
-      <button class="btn-unsub" onclick="markUnsubDone('${escHtml(s.email)}', this)">✓ Dismiss</button>
-    `;
-    grid.appendChild(item);
-  });
-}
-
-function openBlockModal_unsub(email, e) {
-  e.stopPropagation();
-  if (blockedSenders.has(email)) return;
-  // Find a matching email object to reuse confirmBlock logic
-  const match = allEmails.find(em => extractEmail(em.sender) === email);
-  if (match) { pendingBlockEmail = match; }
-  else { pendingBlockEmail = { sender: email, id: null }; }
-  document.getElementById('block-sender-name').textContent = email;
-  document.getElementById('block-modal-overlay').classList.add('open');
-}
-
-function markUnsubDone(email, btn) {
-  const id = `unsub-${btoa(email).replace(/=/g,'')}`;
-  const item = document.getElementById(id);
-  if (item) { item.style.opacity = '0'; item.style.transition = 'opacity 0.3s'; setTimeout(() => item.remove(), 300); }
-  const grid = document.getElementById('unsub-grid');
-  setTimeout(() => {
-    const remaining = grid.querySelectorAll('.unsub-item').length;
-    document.getElementById('unsub-count').textContent = remaining;
-    if (!remaining) document.getElementById('unsub-section').style.display = 'none';
-  }, 350);
-}
-
-let unsubOpen = true;
-function toggleUnsub() {
-  unsubOpen = !unsubOpen;
-  document.getElementById('unsub-grid').style.display = unsubOpen ? 'flex' : 'none';
-  document.getElementById('unsub-toggle').textContent = unsubOpen ? '▼' : '▶';
-}
+function renderBlockedList() {
   const section = document.getElementById('blocked-section');
   if(!blockedSenders.size){section.style.display='none';return;}
   section.style.display='block';
@@ -788,22 +680,14 @@ function formatDate(dateStr){
    }catch{return dateStr;}
 }
 
-function initApp() {
-  const googleBtn = document.getElementById('btn-google-signin');
-  const demoBtn = document.getElementById('btn-demo');
-  if (googleBtn) googleBtn.addEventListener('click', connectGmail);
-  if (demoBtn) demoBtn.addEventListener('click', startDemo);
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('btn-google-signin').addEventListener('click', connectGmail);
+  document.getElementById('btn-demo').addEventListener('click', startDemo);
   checkOAuthCallback();
   if (accessToken && !window.location.hash.includes('access_token')) {
     fetchUserEmail();
   }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
+});
 </script>
 </body>
 </html>
