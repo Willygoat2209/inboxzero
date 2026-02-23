@@ -160,6 +160,22 @@
     .email-item{grid-template-columns:20px 1fr auto}
     .email-tag,.email-meta{display:none}
   }
+
+  /* ── ADDED: Suggested Unsubscriptions ── */
+  .unsub-section { margin-top: 24px; border: 1px solid rgba(71,255,232,0.2); background: rgba(71,255,232,0.03); }
+  .unsub-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid rgba(71,255,232,0.15); cursor: pointer; }
+  .unsub-header h3 { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent2); }
+  .unsub-header .toggle { color: var(--accent2); font-size: 12px; }
+  .unsub-grid { padding: 12px 20px; display: flex; flex-direction: column; gap: 2px; }
+  .unsub-item { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); padding: 12px 14px; transition: border-color 0.2s; }
+  .unsub-item:hover { border-color: var(--accent2); }
+  .unsub-info { min-width: 0; }
+  .unsub-sender { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+  .unsub-stats { font-size: 10px; color: var(--danger); }
+  .btn-unsub-block { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,107,157,0.3); background: rgba(255,107,157,0.08); color: var(--block); transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+  .btn-unsub-block:hover { background: rgba(255,107,157,0.2); border-color: var(--block); }
+  .btn-unsub-dismiss { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+  .btn-unsub-dismiss:hover { border-color: var(--muted); color: var(--text); }
 </style>
 </head>
 <body>
@@ -204,7 +220,7 @@
   <div class="panel card" id="panel-scan">
     <div class="scan-header">
       <h2>Scanning All Emails</h2>
-      <div class="account-badge"><div class="dot"></div><span id="connected-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="543031393b143339353d387a373b39">[email&#160;protected]</a></span></div>
+      <div class="account-badge"><div class="dot"></div><span id="connected-email">demo@gmail.com</span></div>
     </div>
     <div class="progress-section">
       <div style="font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;" id="scan-status-text">Connecting to Gmail…</div>
@@ -262,6 +278,15 @@
       </div>
       <div class="blocked-list" id="blocked-list"></div>
     </div>
+
+    <!-- ADDED: Suggested Unsubscriptions -->
+    <div class="unsub-section" id="unsub-section" style="display:none;">
+      <div class="unsub-header" onclick="toggleUnsub()">
+        <h3>💡 Suggested Unsubscriptions (<span id="unsub-count">0</span>)</h3>
+        <span class="toggle" id="unsub-toggle">▼</span>
+      </div>
+      <div class="unsub-grid" id="unsub-grid"></div>
+    </div>
   </div>
 </div>
 
@@ -299,7 +324,7 @@
   <a href="/terms.html" style="color:var(--muted);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Terms of Service</a>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false">
 let accessToken = sessionStorage.getItem('iz_token') || null;
 let demoMode = false;
 let allEmails = [];
@@ -309,6 +334,7 @@ let blockedSenders = new Set();
 let currentFilter = 'all';
 let pendingBlockEmail = null;
 let blockedOpen = true;
+let unsubOpen = true; // ADDED
 
 const SCOPES = 'https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.settings.basic';
 const CLIENT_ID = '679696279477-toe1ut8lsfok496c6e1gpibf4cb4kjl9.apps.googleusercontent.com';
@@ -408,40 +434,44 @@ async function startGmailScan() {
   setTimeout(showResults, 1000);
 }
 
-// Demo data
-const DEMO_EMAILS = [
-  {id:'1',  sender:'Amazon.com <ship@amazon.com>',              subject:'Your order has shipped! Track it now',          date:'3d ago',  category:'promo'},
-  {id:'2',  sender:'LinkedIn <messages@linkedin.com>',          subject:'You have 14 new notifications waiting',         date:'1d ago',  category:'newsletter'},
-  {id:'3',  sender:'Groupon <deals@groupon.com>',               subject:'🔥 80% off this weekend only — Hurry!',         date:'5d ago',  category:'promo'},
-  {id:'4',  sender:'Medium <noreply@medium.com>',               subject:'Your daily reads: 7 curated stories',           date:'2d ago',  category:'newsletter'},
-  {id:'5',  sender:'Spotify <no-reply@spotify.com>',            subject:'Your Wrapped is here — 2024 stats',             date:'7d ago',  category:'promo'},
-  {id:'6',  sender:'Product Hunt <newsletter@producthunt.com>', subject:"Today's top 12 launches you need to see",       date:'1d ago',  category:'newsletter'},
-  {id:'7',  sender:'Airbnb <automated@airbnb.com>',             subject:"Book your holiday stay before it's gone",       date:'4d ago',  category:'promo'},
-  {id:'8',  sender:'Google Alerts <googlealerts@google.com>',   subject:'Google Alert - artificial intelligence',        date:'12d ago', category:'read'},
-  {id:'9',  sender:'Twitter/X <info@twitter.com>',              subject:"See what's happening on X today",               date:'8d ago',  category:'promo'},
-  {id:'10', sender:'GitHub <no-reply@github.com>',              subject:'[GitHub] OAuth application access granted',     date:'20d ago', category:'read'},
-  {id:'11', sender:'Notion <mail@notion.so>',                   subject:'Your weekly digest: workspace updates',         date:'3d ago',  category:'newsletter'},
-  {id:'12', sender:'Booking.com <promo@booking.com>',           subject:'Complete your booking before it expires',       date:'6d ago',  category:'promo'},
-  {id:'13', sender:'SpamCo <noreply@spamco.biz>',               subject:'Get rich quick — guaranteed results!!!',        date:'2d ago',  category:'spam'},
-  {id:'14', sender:'TechCrunch <newsletters@techcrunch.com>',   subject:'TC Daily: Biggest tech stories this week',      date:'1d ago',  category:'newsletter'},
-  {id:'15', sender:'Uber Eats <uber@uber.com>',                 subject:"Hungry? Here's $5 off your next order",         date:'4d ago',  category:'promo'},
-  {id:'16', sender:'Coursera <noreply@coursera.org>',           subject:'Complete your certificate — 2 modules left',    date:'15d ago', category:'read'},
-  {id:'17', sender:'Best Buy <email@bestbuy.com>',              subject:'FLASH SALE: Up to 60% off electronics today',   date:'2d ago',  category:'promo'},
-  {id:'18', sender:'Duolingo <hello@duolingo.com>',             subject:"7-day streak! Don't break it now 🔥",           date:'1d ago',  category:'newsletter'},
-  {id:'19', sender:'PayPal <service@paypal.com>',               subject:'Receipt for your recent payment — $24.99',      date:'10d ago', category:'read'},
-  {id:'20', sender:'Dropbox <no-reply@dropbox.com>',            subject:'A file was shared with you: Q3 Report.pdf',     date:'18d ago', category:'read'},
-  {id:'21', sender:'Pinterest <mail@pinterest.com>',            subject:'Sarah liked 3 of your pins this week',          date:'3d ago',  category:'social'},
-  {id:'22', sender:'Facebook <notification@facebookmail.com>',  subject:'You have 5 new friend requests',                date:'2d ago',  category:'social'},
-  {id:'23', sender:'Wix <info@wix.com>',                        subject:'Your site traffic is up 40% this month!',       date:'5d ago',  category:'newsletter'},
-  {id:'24', sender:'Bank of America <bofa@response.bofa.com>',  subject:'Your monthly statement is ready to view',       date:'4d ago',  category:'read'},
-];
+// Demo data — emails use plain text, no @ symbols to avoid Cloudflare mangling
+function makeDemoEmails() {
+  const a = '@';
+  return [
+    {id:'1',  sender:'Amazon.com <ship'+a+'amazon.com>',              subject:'Your order has shipped! Track it now',          date:'3d ago',  category:'promo'},
+    {id:'2',  sender:'LinkedIn <messages'+a+'linkedin.com>',          subject:'You have 14 new notifications waiting',         date:'1d ago',  category:'newsletter'},
+    {id:'3',  sender:'Groupon <deals'+a+'groupon.com>',               subject:'80% off this weekend only — Hurry!',            date:'5d ago',  category:'promo'},
+    {id:'4',  sender:'Medium <noreply'+a+'medium.com>',               subject:'Your daily reads: 7 curated stories',           date:'2d ago',  category:'newsletter'},
+    {id:'5',  sender:'Spotify <no-reply'+a+'spotify.com>',            subject:'Your Wrapped is here — 2024 stats',             date:'7d ago',  category:'promo'},
+    {id:'6',  sender:'Product Hunt <newsletter'+a+'producthunt.com>', subject:"Today's top 12 launches you need to see",       date:'1d ago',  category:'newsletter'},
+    {id:'7',  sender:'Airbnb <automated'+a+'airbnb.com>',             subject:"Book your holiday stay before it's gone",       date:'4d ago',  category:'promo'},
+    {id:'8',  sender:'Google Alerts <googlealerts'+a+'google.com>',   subject:'Google Alert - artificial intelligence',        date:'12d ago', category:'read'},
+    {id:'9',  sender:'Twitter/X <info'+a+'twitter.com>',              subject:"See what's happening on X today",               date:'8d ago',  category:'promo'},
+    {id:'10', sender:'GitHub <no-reply'+a+'github.com>',              subject:'[GitHub] OAuth application access granted',     date:'20d ago', category:'read'},
+    {id:'11', sender:'Notion <mail'+a+'notion.so>',                   subject:'Your weekly digest: workspace updates',         date:'3d ago',  category:'newsletter'},
+    {id:'12', sender:'Booking.com <promo'+a+'booking.com>',           subject:'Complete your booking before it expires',       date:'6d ago',  category:'promo'},
+    {id:'13', sender:'SpamCo <noreply'+a+'spamco.biz>',               subject:'Get rich quick — guaranteed results!!!',        date:'2d ago',  category:'spam'},
+    {id:'14', sender:'TechCrunch <newsletters'+a+'techcrunch.com>',   subject:'TC Daily: Biggest tech stories this week',      date:'1d ago',  category:'newsletter'},
+    {id:'15', sender:'Uber Eats <uber'+a+'uber.com>',                 subject:"Hungry? Here's $5 off your next order",         date:'4d ago',  category:'promo'},
+    {id:'16', sender:'Coursera <noreply'+a+'coursera.org>',           subject:'Complete your certificate — 2 modules left',   date:'15d ago', category:'read'},
+    {id:'17', sender:'Best Buy <email'+a+'bestbuy.com>',              subject:'FLASH SALE: Up to 60% off electronics today',   date:'2d ago',  category:'promo'},
+    {id:'18', sender:'Duolingo <hello'+a+'duolingo.com>',             subject:"7-day streak! Don't break it now",              date:'1d ago',  category:'newsletter'},
+    {id:'19', sender:'PayPal <service'+a+'paypal.com>',               subject:'Receipt for your recent payment — $24.99',     date:'10d ago', category:'read'},
+    {id:'20', sender:'Dropbox <no-reply'+a+'dropbox.com>',            subject:'A file was shared with you: Q3 Report.pdf',    date:'18d ago', category:'read'},
+    {id:'21', sender:'Pinterest <mail'+a+'pinterest.com>',            subject:'Sarah liked 3 of your pins this week',         date:'3d ago',  category:'social'},
+    {id:'22', sender:'Facebook <notification'+a+'facebookmail.com>',  subject:'You have 5 new friend requests',               date:'2d ago',  category:'social'},
+    {id:'23', sender:'Wix <info'+a+'wix.com>',                        subject:'Your site traffic is up 40% this month!',      date:'5d ago',  category:'newsletter'},
+    {id:'24', sender:'Bank of America <bofa'+a+'response.bofa.com>',  subject:'Your monthly statement is ready to view',      date:'4d ago',  category:'read'},
+  ];
+}
 
 function startDemo() {
   demoMode = true;
-  document.getElementById('connected-email').textContent = 'demo@gmail.com';
+  document.getElementById('connected-email').textContent = 'demo' + '@' + 'gmail.com';
   showPanel('scan');
   allEmails = []; selectedIds.clear(); blockedSenders.clear();
   let i = 0, total = 1247, promoC = 0, nlC = 0, spamC = 0;
+  const DEMO_EMAILS = makeDemoEmails();
   const statuses = ['Connecting to Gmail API…','Fetching all inbox messages (read & unread)…','Analyzing message headers…','Running AI classification…','Detecting promotional patterns…','Identifying newsletter senders…','Scanning for spam signatures…','Categorizing read emails…','Finalizing…'];
   let si = 0;
   const iv = setInterval(() => {
@@ -508,6 +538,7 @@ function showResults() {
   allEmails.forEach(e => cats[e.category] = (cats[e.category]||0)+1);
   const clutter = (cats.promo||0)+(cats.newsletter||0)+(cats.spam||0);
   document.getElementById('results-summary').textContent = `${allEmails.length} emails scanned — ${clutter} promotional/spam found`;
+  buildUnsubSuggestions(); // ADDED
 }
 
 function renderEmailList() {
@@ -601,7 +632,7 @@ async function confirmBlock() {
 
   allEmails = allEmails.filter(e=>!toDelete.includes(e.id));
   toDelete.forEach(id=>selectedIds.delete(id));
-  updateTabCounts(); renderEmailList(); renderBlockedList();
+  updateTabCounts(); renderEmailList(); renderBlockedList(); buildUnsubSuggestions(); // ADDED buildUnsubSuggestions
   document.getElementById('results-summary').textContent = `${allEmails.length} emails remaining`;
   showToast(`🚫 Blocked ${se} — ${toDelete.length} email${toDelete.length!==1?'s':''} deleted`, 'block-toast');
   pendingBlockEmail = null;
@@ -651,12 +682,14 @@ function signOut() {
   demoMode = false;
   allEmails = []; selectedIds.clear(); blockedSenders.clear();
   document.getElementById('blocked-section').style.display = 'none';
+  document.getElementById('unsub-section').style.display = 'none'; // ADDED
   showPanel('connect');
 }
 
 function rescan(){
   allEmails=[];selectedIds.clear();blockedSenders.clear();
   document.getElementById('blocked-section').style.display='none';
+  document.getElementById('unsub-section').style.display='none'; // ADDED
   document.getElementById('live-log').innerHTML='<div class="log-line"><span class="log-time">00:00</span><span class="log-msg neutral">— Reinitializing…</span></div>';
   document.getElementById('progress-bar').style.width='0%';
   showPanel('scan');
@@ -677,8 +710,85 @@ function formatDate(dateStr){
     if(days===0) return 'Today';if(days===1) return 'Yesterday';
     if(days<30) return `${days}d ago`;if(days<365) return `${Math.floor(days/30)}mo ago`;
     return `${Math.floor(days/365)}y ago`;
-   }catch{return dateStr;}
+  }catch{return dateStr;}
 }
+
+// ── ADDED: Suggested Unsubscriptions ──────────────────────────────────
+function buildUnsubSuggestions() {
+  // Group all emails by sender address
+  const senderMap = {};
+  allEmails.forEach(e => {
+    const key = extractEmail(e.sender);
+    if (!senderMap[key]) senderMap[key] = { sender: e.sender, total: 0, unreadCount: 0 };
+    senderMap[key].total++;
+    if (e.category === 'unread' || e.category === 'promo' || e.category === 'newsletter') {
+      senderMap[key].unreadCount++;
+    }
+  });
+
+  // Suggest senders who have 2+ emails and ALL of them are unread/promo/newsletter (never opened)
+  const suggestions = Object.entries(senderMap)
+    .filter(([addr, data]) => data.total >= 2 && data.unreadCount === data.total && !blockedSenders.has(addr))
+    .map(([addr, data]) => ({ addr, ...data }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 10);
+
+  const section = document.getElementById('unsub-section');
+  const grid = document.getElementById('unsub-grid');
+
+  if (!suggestions.length) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  document.getElementById('unsub-count').textContent = suggestions.length;
+  grid.innerHTML = '';
+
+  suggestions.forEach(s => {
+    const displayName = s.sender.replace(/<.*>/, '').trim() || s.addr;
+    const item = document.createElement('div');
+    item.className = 'unsub-item';
+    item.id = 'unsub-' + s.addr.replace(/[^a-z0-9]/gi, '_');
+    item.innerHTML = `
+      <div class="unsub-info">
+        <div class="unsub-sender">${escHtml(displayName)}</div>
+        <div class="unsub-stats">${s.total} email${s.total!==1?'s':''} — never opened</div>
+      </div>
+      <button class="btn-unsub-block" onclick="unsubBlock('${escHtml(s.addr)}', event)">🚫 Block</button>
+      <button class="btn-unsub-dismiss" onclick="unsubDismiss('${escHtml(s.addr)}')">✕ Dismiss</button>
+    `;
+    grid.appendChild(item);
+  });
+}
+
+function unsubBlock(addr, e) {
+  // Reuse the existing block modal flow
+  const match = allEmails.find(em => extractEmail(em.sender) === addr);
+  if (!match) return;
+  pendingBlockEmail = match;
+  document.getElementById('block-sender-name').textContent = addr;
+  document.getElementById('block-modal-overlay').classList.add('open');
+}
+
+function unsubDismiss(addr) {
+  const id = 'unsub-' + addr.replace(/[^a-z0-9]/gi, '_');
+  const item = document.getElementById(id);
+  if (item) {
+    item.style.transition = 'opacity 0.3s';
+    item.style.opacity = '0';
+    setTimeout(() => {
+      item.remove();
+      const remaining = document.getElementById('unsub-grid').querySelectorAll('.unsub-item').length;
+      document.getElementById('unsub-count').textContent = remaining;
+      if (!remaining) document.getElementById('unsub-section').style.display = 'none';
+    }, 300);
+  }
+}
+
+function toggleUnsub() {
+  unsubOpen = !unsubOpen;
+  document.getElementById('unsub-grid').style.display = unsubOpen ? 'flex' : 'none';
+  document.getElementById('unsub-toggle').textContent = unsubOpen ? '▼' : '▶';
+}
+// ── END ADDED ──────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('btn-google-signin').addEventListener('click', connectGmail);
